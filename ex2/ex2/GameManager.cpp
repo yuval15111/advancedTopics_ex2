@@ -2,17 +2,17 @@
 
 GameManager::~GameManager()
 {
-	delete m_player;
+	//delete m_player;
 }
 
 /* main function of manager, where the game flow is */
-vector<char> Manager::play() {
-	vector<char> actionsLst;
+vector<char> GameManager::play() {
+	/*vector<char> actionsLst;
 	m_player = new Player();										// PLAYER: LET'S GO!
 	for (int i = 1; i <= m_maxSteps; ++i) {
-		Action action = m_player->move();							// PLAYER: THIS IS MY MOVE!
+		Move action = m_player->move();							// PLAYER: THIS IS MY MOVE!
 		actionsLst.push_back(getActionChar(action));
-		if (action == Action::BOOKMARK)	updateBookmark();
+		if (action == Move::BOOKMARK)	updateBookmark();
 		else {
 			execute(action);										// MANAGER: OK, LET ME WRITE THAT DOWN...
 			if (playerHitsEndChar()) {
@@ -31,26 +31,27 @@ vector<char> Manager::play() {
 	}
 	actionsLst.push_back('X');
 	printLostMessage(m_maxSteps);									// MANAGER: YOU SHOULD TRY HARDER NEXT TIME. CYA!
-	return actionsLst;
+	return actionsLst;*/
+	return vector<char>();
 }
 
-void Manager::execute(Action a, const bool undo)
+void GameManager::execute(Move a, const bool undo)
 {
 	a = undo ? !a : a;
 	switch (a) {
-	case Action::UP:
+	case Move::UP:
 		m_playerLocation.first += m_rowsNum - 1;
 		m_playerLocation.first %= m_rowsNum;
 		break;
-	case Action::DOWN:
+	case Move::DOWN:
 		m_playerLocation.first++;
 		m_playerLocation.first %= m_rowsNum;
 		break;
-	case Action::LEFT:
+	case Move::LEFT:
 		m_playerLocation.second += m_colsNum - 1;
 		m_playerLocation.second %= m_colsNum;
 		break;
-	case Action::RIGHT:
+	case Move::RIGHT:
 		m_playerLocation.second++;
 		m_playerLocation.second %= m_colsNum;
 		break;

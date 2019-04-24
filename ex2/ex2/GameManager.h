@@ -1,7 +1,7 @@
 #ifndef GAMEMANAGER_H
 #define GAMEMANAGER_H
 
-#include "Player.h"
+#include "MainAux.h"
 
 class GameManager {
 public:
@@ -13,7 +13,7 @@ private:
 	Coordinate 				m_playerLocation;
 	Coordinate				m_endLocation;
 	Coordinate				m_bookmark;
-	Player *				m_player = nullptr;
+	//Player *				m_player = nullptr;
 
 public:
 	GameManager(string name, int maxSteps, int rowsNum, int colsNum,
@@ -24,7 +24,7 @@ public:
 	~GameManager();
 
 	inline void				updateBookmark() { m_bookmark = m_playerLocation; }
-	void					execute(Action a, const bool undo = false);
+	void					execute(Move a, const bool undo = false);
 	inline char				getCoordValue() { return m_board[m_playerLocation.first][m_playerLocation.second]; }
 	inline bool				playerHitsEndChar() { return getCoordValue() == END_CHAR; }
 	inline bool				playerHitsWallChar() { return getCoordValue() == WALL_CHAR; }

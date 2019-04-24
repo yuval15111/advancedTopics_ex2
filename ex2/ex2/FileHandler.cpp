@@ -2,14 +2,120 @@
 
 FileHandler::~FileHandler()
 {
-	if (m_manager != nullptr) delete m_manager;
-	m_fin.close();
-	m_fout.close();
+	//if (m_manager != nullptr) delete m_manager;
+	//m_mazeFile.close();
+	//m_outputFile.close();
 }
 
+// TODO: Finish method
+bool FileHandler::createDLVector(const string& path) {
+	/*
+	FILE* dl;   // handle to read directory 
+	string cmd_str = "ls " + path + "/*.so";
+	const char *command_str = cmd_str.c_str();  // command string to get dynamic lib names
+	char in_buf[BUF_SIZE];
+	char curDLName[BUF_SIZE]; //name of the current dl
+	void *dlib;
+	dl = _popen(command_str, "r"); // TODO: in linux, delete underscore!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	if (!dl) {
+		_pclose(dl);
+		return false;
+	}
+	while (fgets(in_buf, BUF_SIZE, dl)) {
+		// trim off the whitespace 
+		char *ws = strpbrk(in_buf, " \t\n");
+		if (ws) *ws = '\0';
+		// append ./ to the front of the lib name
+		sprintf(curDLName, "%s", in_buf);
+		dlib = dlopen(curDLName, RTLD_NOW);
+		if (dlib == NULL) {
+			cerr << dlerror() << endl;
+			_pclose(dl);
+			exit(-1);
+		}
+		// add the handle to our list
+		m_algorithmDL.push_back(dlib);
+	}
+	if (m_mazeFiles.size() == 0)
+	{
+		cout << "no *.so files found." << endl;
+		_pclose(dl);
+		return false;
+	}
+	_pclose(dl);
+	*/
+	return true;
+}
+
+// TODO: Finish method
+bool FileHandler::parsePairOfArguments(char * type, char * path) {
+	if (strcmp(type, "-maze_path") == 0) {
+		if (!mazePathExists) {
+			mazePathExists = true;
+			createDLVector(path);
+		}
+		else {
+			// TODO: push error of wrong arguments format
+			return false;
+		}
+	}
+	else if (strcmp(type, "-output") == 0) {
+		if (!outputPathExists) {
+			outputPathExists = true;
+		}
+		else {
+			// TODO: push error of wrong arguments format
+			return false;
+		}
+	}
+	else if (strcmp(type, "-algorithm_path") == 0) {
+		if (!algorithmPathExists) {
+			algorithmPathExists = true;
+		}
+		else {
+			// TODO: push error of wrong arguments format
+			return false;
+		}
+	}
+	else { //TODO: push error for wrong format
+		return false;
+	}
+	return true;
+}
+
+// TODO: Finish method
 /*	In the constructor we initialize ifstream m_fin and ofstream m_fout.
 	We also check here validity of the program arguments. */
 FileHandler::FileHandler(int argc, char * argv[]) {
+	switch (argc) {
+	case 1:
+
+		break;
+	case 3:
+		if (!parsePairOfArguments(argv[1], argv[2])) {
+
+		}
+		break;
+	case 5:
+		if (!parsePairOfArguments(argv[1], argv[2]) || !parsePairOfArguments(argv[3], argv[4])) {
+
+		}
+		break;
+	case 7:
+		if (!parsePairOfArguments(argv[1], argv[2]) || !parsePairOfArguments(argv[3], argv[4]) || !parsePairOfArguments(argv[5], argv[7])) {
+
+		}
+		break;
+	default: // TODO: push error for wrong format
+		break;
+	}
+
+	// TODO: for every path not in arguments, handle:
+	// maze file and algorithm - use current directory
+	// output - does not make an output file and only prints to screen
+
+
+
 	// Checking if the parsing allow for local issues
 	bool parseAllow = true;
 	switch (argc) {
@@ -42,8 +148,8 @@ FileHandler::FileHandler(int argc, char * argv[]) {
 				// If parsing is allow meaning the input file is ok
 				if (parseAllow) {
 					allowParsing(true);
-					m_fin.open(argv[1]);
-					if (!m_fin.is_open()) {
+					m_mazeFile.open(argv[1]);
+					if (!m_mazeFile.is_open()) {
 						pushError(ErrorType::BadInputAddress, argv[1]);
 						parseAllow = false;
 						allowParsing(false);
@@ -52,10 +158,10 @@ FileHandler::FileHandler(int argc, char * argv[]) {
 				m_errors.no_IO_Errors = false;
 			}
 			else {
-				m_fout.open(argv[2]);
+				m_outputFile.open(argv[2]);
 				if (parseAllow) {
-					m_fin.open(argv[1]);
-					if (!m_fin.is_open()) {
+					m_mazeFile.open(argv[1]);
+					if (!m_mazeFile.is_open()) {
 						pushError(ErrorType::BadInputAddress, argv[1]);
 						parseAllow = false;
 						allowParsing(false);
@@ -67,7 +173,7 @@ FileHandler::FileHandler(int argc, char * argv[]) {
 		}
 		else if (parseAllow) { // only if input is valid we will allow parsing
 			allowParsing(true);
-			m_fin.open(argv[1]);
+			m_mazeFile.open(argv[1]);
 		}
 	}
 	checkErrors(nullptr);
@@ -104,14 +210,14 @@ void FileHandler::parseInput() {
 		MazeBoard board = getBoard(rowsNum, colsNum, playerLocation, endLocation, line);
 		checkErrors((void*)printMazeErrorTitle);
 		if (m_errors.no_parsing_Errors && m_errors.no_IO_Errors)							// No errors, maze file is valid - creates a Manager object
-			m_manager = new Manager(name, maxSteps, rowsNum, colsNum,
+			m_manager = new GameManager(name, maxSteps, rowsNum, colsNum,
 				board, playerLocation, endLocation);
 	}
 }
 
 /* This function retrieves the name of the maze. */
 string FileHandler::getName(string & line) {
-	if (getline(m_fin, line)) {
+	if (getline(m_mazeFile, line)) {
 		return line;
 	}
 	return nullptr;
@@ -123,7 +229,7 @@ int FileHandler::getIntValue(const string & input, const ErrorType error, string
 
 	const regex numReg("[1-9][0-9]*");
 	smatch match;
-	if (getline(m_fin, line)) {
+	if (getline(m_mazeFile, line)) {
 		if (!regex_match(line, reg)) {
 			pushError(error, line);
 			return -1;
@@ -143,7 +249,7 @@ MazeBoard FileHandler::getBoard(const int rows, const int cols, Coordinate & pla
 	bool seenPlayerChar = false, seenEndChar = false;
 	for (int i = 0; i < rows; i++) {
 		MazeRow row;
-		if (getline(m_fin, line)) {											// Succeeded reading a line - fills MazeRow according to line
+		if (getline(m_mazeFile, line)) {											// Succeeded reading a line - fills MazeRow according to line
 			for (int j = 0; j < min(cols, (int)line.length()); j++) {
 				if (line[j] == PLAYER_CHAR)
 					handleSpecialChar(PLAYER_CHAR, playerLocation, i, j, seenPlayerChar, line, ErrorType::MoreThanOnePlayerChar);
@@ -196,5 +302,5 @@ void FileHandler::handleInvalidChar(const char c, const int i, const int j) {
 	This function pushes the actions vector into the output file. */
 void FileHandler::pushActionsToOutputFile(vector<char> actions) {
 	for (const char & c : actions)
-		m_fout << c << endl;
+		m_outputFile << c << endl;
 }
