@@ -23,6 +23,7 @@
     <ProjectGuid>{37305937-391C-42BF-9BC4-9429ECBE43FB}</ProjectGuid>
     <RootNamespace>ex2</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <ProjectName>ex2_match</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
