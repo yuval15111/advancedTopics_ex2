@@ -21,11 +21,17 @@
   <ItemGroup>
     <ClInclude Include="AbstractAlgorithm.h" />
     <ClInclude Include="AlgorithmRegistration.h" />
+    <ClInclude Include="FileHandler.h" />
     <ClInclude Include="GameManager.h" />
+    <ClInclude Include="MainAux.h" />
     <ClInclude Include="MatchManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AlgorithmRegistration.cpp" />
+    <ClCompile Include="FileHandler.cpp" />
     <ClCompile Include="GameManager.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="MainAux.cpp" />
     <ClCompile Include="MatchManager.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
