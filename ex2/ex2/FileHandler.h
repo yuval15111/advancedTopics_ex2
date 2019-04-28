@@ -11,20 +11,20 @@
 class FileHandler {
 private:
 	bool					mazePathExists = false;
-	bool					outputPathExists = false;
 	bool					algorithmPathExists = false;
-	//vector<ifstream>		m_mazeFiles;
-	ifstream				m_mazeFile;
-	vector<void*>			m_algorithmDL;
-	//TODO: insert algorithm .so file field
-	ofstream				m_outputFile;
+	bool					outputPathExists = false;
+	vector<MazePair>		m_mazeVector;
+	vector<AlgorithmPair>	m_algorithmVector;
+	vector<OutputPair>		m_outputVector;
+	string					m_outputPath;
 	Errors					m_errors;
 	GameManager *			m_manager = nullptr;
-	bool					createDLVector(const string& path);
-	bool					parsePairOfArguments(char * type, char * path);
-	inline void				allowParsing(bool allow) { m_errors.allowParsing = allow; }
+	void					initVectorsByCurrDirectory(const string& path);
+	void					createDLVector(const string& path);
+	void					createOutputVector();
+	void					parsePairOfArguments(char * type, char * path);
 	void					checkErrors(void* (titleFunc));
-	inline void				pushError(ErrorType type, const string & str) { m_errors.list.push_back(Pair(type, str)); }
+	inline void				pushError(ErrorType type, const string & str) { m_errors.list.push_back(ErrorPair(type, str)); }
 	string					getName(string & line);
 	int						getIntValue(const string & input, const ErrorType error, string & line);
 	MazeBoard				getBoard(const int rows, const int cols, Coordinate & playerLocation, Coordinate & endLocation, string & line);
@@ -32,11 +32,11 @@ private:
 	void					handleInvalidChar(const char c, const int i, const int j);
 
 public:
+	bool					wrongArgumentsFormat = false;
 	FileHandler(int argc, char* argv[]);
 	~FileHandler();
 	inline GameManager *	getManager() { return m_manager; }
 	void					parseInput();
-	inline bool				parsingIsAllowed() { return m_errors.allowParsing; }
 	void					pushActionsToOutputFile(vector<char> actions);
 };
 

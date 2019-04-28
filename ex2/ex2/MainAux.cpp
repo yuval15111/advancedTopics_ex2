@@ -25,24 +25,9 @@ void printLostMessage(const int numOfSteps) {
 	cout << "Failed to solve maze in " << numOfSteps << " steps" << endl;
 }
 
-void printMissingInputError(const string & str) {
-	(void)str;
-	cout << "Missing maze file argument in command line" << endl;
-}
-
-void printMissingOutputError(const string & str) {
-	(void)str;
-	cout << "Missing output file argument in command line" << endl;
-}
-
-void printBadInputAddressError(const string & str)
+void printWrongArgumentsFormatError()
 {
-	cout << "Command line argument for maze: " << str << " doesn't lead to a maze file or leads to a file that cannot be opened" << endl;
-}
-
-void printBadOutputAddressError(const string & str)
-{
-	cout << "Command line argument for output file: " << str << " points to a bad path or to a file that already exists" << endl;
+	cout << "Wrong format arguments" << endl;
 }
 
 void printHeaderErrorTitle()

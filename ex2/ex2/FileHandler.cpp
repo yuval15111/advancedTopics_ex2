@@ -7,8 +7,10 @@ FileHandler::~FileHandler()
 	//m_outputFile.close();
 }
 
+
+
 // TODO: Finish method
-bool FileHandler::createDLVector(const string& path) {
+void FileHandler::createDLVector(const string& path) {
 	/*
 	FILE* dl;   // handle to read directory 
 	string cmd_str = "ls " + path + "/*.so";
@@ -44,43 +46,48 @@ bool FileHandler::createDLVector(const string& path) {
 	}
 	_pclose(dl);
 	*/
-	return true;
+}
+
+void FileHandler::createOutputVector()
+{
+	for (vector<MazePair>::iterator it_1 = m_mazeVector.begin(); it_1 != m_mazeVector.end(); ++it_1) {
+		for (vector<AlgorithmPair>::iterator it_2 = m_algorithmVector.begin(); it_2 != m_algorithmVector.end(); ++it_2) {
+			// TODO: check correctness
+			m_outputVector.push_back(OutputPair(it_1->first+"_"+it_2->first, ofstream(m_outputPath + "/" + it_1->first + "_" + it_2->first + ".output")));
+		}
+	}
+}
+
+void FileHandler::initVectorsByCurrDirectory(const string & path) {
+	// TODO: if (!mazePathExists) createMazeVetor(path);
+	if (!algorithmPathExists) createDLVector(path);
+	// TODO: if (mazePathExists) createOutputVector();
 }
 
 // TODO: Finish method
-bool FileHandler::parsePairOfArguments(char * type, char * path) {
-	if (strcmp(type, "-maze_path") == 0) {
+void FileHandler::parsePairOfArguments(char * type, char * path) {
+	if (strcmp(type, "-maze_path") == 0) { // .maze folder path
 		if (!mazePathExists) {
 			mazePathExists = true;
-			createDLVector(path);
+			// TODO: createMazeVetor(path);
 		}
-		else {
-			// TODO: push error of wrong arguments format
-			return false;
-		}
+		else wrongArgumentsFormat = true;
 	}
-	else if (strcmp(type, "-output") == 0) {
-		if (!outputPathExists) {
-			outputPathExists = true;
-		}
-		else {
-			// TODO: push error of wrong arguments format
-			return false;
-		}
-	}
-	else if (strcmp(type, "-algorithm_path") == 0) {
+	else if (strcmp(type, "-algorithm_path") == 0) { // .so folder path
 		if (!algorithmPathExists) {
 			algorithmPathExists = true;
+			createDLVector(path);
 		}
-		else {
-			// TODO: push error of wrong arguments format
-			return false;
+		else wrongArgumentsFormat = true;
+	}
+	else if (strcmp(type, "-output") == 0) { // .output folder path
+		if (!outputPathExists) {
+			outputPathExists = true;
+			m_outputPath = path;
 		}
+		else wrongArgumentsFormat = true;
 	}
-	else { //TODO: push error for wrong format
-		return false;
-	}
-	return true;
+	else wrongArgumentsFormat = true;
 }
 
 // TODO: Finish method
@@ -88,95 +95,23 @@ bool FileHandler::parsePairOfArguments(char * type, char * path) {
 	We also check here validity of the program arguments. */
 FileHandler::FileHandler(int argc, char * argv[]) {
 	switch (argc) {
-	case 1:
-
-		break;
-	case 3:
-		if (!parsePairOfArguments(argv[1], argv[2])) {
-
-		}
-		break;
-	case 5:
-		if (!parsePairOfArguments(argv[1], argv[2]) || !parsePairOfArguments(argv[3], argv[4])) {
-
-		}
-		break;
 	case 7:
-		if (!parsePairOfArguments(argv[1], argv[2]) || !parsePairOfArguments(argv[3], argv[4]) || !parsePairOfArguments(argv[5], argv[7])) {
-
-		}
-		break;
-	default: // TODO: push error for wrong format
-		break;
-	}
-
-	// TODO: for every path not in arguments, handle:
-	// maze file and algorithm - use current directory
-	// output - does not make an output file and only prints to screen
-
-
-
-	// Checking if the parsing allow for local issues
-	bool parseAllow = true;
-	switch (argc) {
+		parsePairOfArguments(argv[5], argv[6]);
+	case 5:
+		parsePairOfArguments(argv[3], argv[4]);
+	case 3:
+		parsePairOfArguments(argv[1], argv[2]);
 	case 1:
-		pushError(ErrorType::MissingInput, string());								// No arguments at all - shouldn't parse
-		pushError(ErrorType::MissingOutput, string());
+		initVectorsByCurrDirectory(argv[0]);
 		break;
-	case 2:
-		m_errors.no_IO_Errors = false;
-		pushError(ErrorType::MissingOutput, string());								// No output path argument: may parse maze anyway
 	default:
-		if (!fileExists(argv[1])) {
-			// For a new printing order - first input and then output
-			if (m_errors.list.size() > 0 && m_errors.list[0].first == ErrorType::MissingOutput) {
-				m_errors.list.pop_back();
-				pushError(ErrorType::BadInputAddress, argv[1]);
-				pushError(ErrorType::MissingOutput, string());
-			}
-			// There are no errors for output
-			else {
-				pushError(ErrorType::BadInputAddress, argv[1]);							// Bad maze path or file does not exist
-			}
-			// doesnt allow parsing - include locally-> parse allow 
-			parseAllow = false;
-			allowParsing(false);
-		}
-		if (argc >= 3) {
-			if (fileExists(argv[2])) {
-				pushError(ErrorType::BadOutputAddress, argv[2]);					// Bad output path argument: may parse maze anyway
-				// If parsing is allow meaning the input file is ok
-				if (parseAllow) {
-					allowParsing(true);
-					m_mazeFile.open(argv[1]);
-					if (!m_mazeFile.is_open()) {
-						pushError(ErrorType::BadInputAddress, argv[1]);
-						parseAllow = false;
-						allowParsing(false);
-					}
-				}
-				m_errors.no_IO_Errors = false;
-			}
-			else {
-				m_outputFile.open(argv[2]);
-				if (parseAllow) {
-					m_mazeFile.open(argv[1]);
-					if (!m_mazeFile.is_open()) {
-						pushError(ErrorType::BadInputAddress, argv[1]);
-						parseAllow = false;
-						allowParsing(false);
-					}
-					// If reaches here, valid output path argument
-					else allowParsing(true);
-				}
-			}
-		}
-		else if (parseAllow) { // only if input is valid we will allow parsing
-			allowParsing(true);
-			m_mazeFile.open(argv[1]);
-		}
+		wrongArgumentsFormat = true;
+		break;
 	}
-	checkErrors(nullptr);
+	if (wrongArgumentsFormat) {
+		printWrongArgumentsFormatError();
+		// TODO: exit the program
+	}
 }
 
 /*	This function checks if there are errors. If so: updates m_errors.noErrors field to false and prints the errors */
@@ -209,7 +144,7 @@ void FileHandler::parseInput() {
 		Coordinate playerLocation, endLocation;
 		MazeBoard board = getBoard(rowsNum, colsNum, playerLocation, endLocation, line);
 		checkErrors((void*)printMazeErrorTitle);
-		if (m_errors.no_parsing_Errors && m_errors.no_IO_Errors)							// No errors, maze file is valid - creates a Manager object
+		if (m_errors.no_parsing_Errors)							// No errors, maze file is valid - creates a Manager object
 			m_manager = new GameManager(name, maxSteps, rowsNum, colsNum,
 				board, playerLocation, endLocation);
 	}

@@ -30,7 +30,6 @@
 #define NUM_OF_STEPS 4
 
 enum class ErrorType {
-	MissingInput, MissingOutput, BadInputAddress, BadOutputAddress,
 	MaxStepsError, RowsError, ColsError,
 	MissingPlayerChar, MissingEndChar,
 	MoreThanOnePlayerChar, MoreThanOneEndChar,
@@ -41,8 +40,11 @@ using namespace std;
 using MazeRow = vector<char>;
 using MazeBoard = vector<MazeRow>;
 using Coordinate = pair<int, int>;
-using Pair = pair<ErrorType, string>;
-using ErrorList = vector<Pair>;
+using MazePair = pair<string, ifstream>; // the name of the maze and the stream
+using AlgorithmPair = pair<string, void*>; // the name of the algorithm and the .so file
+using OutputPair = pair<string, ofstream>; // the name of the output file and the stream
+using ErrorPair = pair<ErrorType, string>;
+using ErrorList = vector<ErrorPair>;
 typedef void(*Func) (const string & str);
 typedef void(*FuncNoArgs) ();
 typedef AbstractAlgorithm::Move Move;
@@ -52,10 +54,7 @@ Move operator!(const Move& a);
 // Event messages
 void printWinMessage(const int numOfSteps);
 void printLostMessage(const int numOfSteps);
-void printMissingInputError(const string & str);
-void printMissingOutputError(const string & str);
-void printBadInputAddressError(const string & str);
-void printBadOutputAddressError(const string & str);
+void printWrongArgumentsFormatError();
 void printHeaderErrorTitle();
 void printMazeErrorTitle();
 void printMaxStepsError(const string & str);
@@ -69,10 +68,6 @@ void printWrongCharError(const string & str);
 
 struct Errors {
 	map<ErrorType, Func> fmap = {
-		{ErrorType::MissingInput, &printMissingInputError},
-		{ErrorType::MissingOutput, &printMissingOutputError},
-		{ErrorType::BadInputAddress, &printBadInputAddressError},
-		{ErrorType::BadOutputAddress, &printBadOutputAddressError},
 		{ErrorType::MaxStepsError, &printMaxStepsError},
 		{ErrorType::RowsError, &printRowsError},
 		{ErrorType::ColsError, &printColsError},
@@ -82,10 +77,8 @@ struct Errors {
 		{ErrorType::MoreThanOneEndChar, &printMoreThanOneEndCharError},
 		{ErrorType::WrongChar, &printWrongCharError}
 	};
-	vector<pair<ErrorType, string>> list;
-	bool no_IO_Errors = true;
 	bool no_parsing_Errors = true;
-	bool allowParsing = false;
+	vector<ErrorPair> list;
 };
 
 bool fileExists(const char* path);
