@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <list>
 #include <utility>
 #include <fstream>
 #include <sys/stat.h>

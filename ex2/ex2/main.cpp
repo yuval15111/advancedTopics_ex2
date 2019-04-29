@@ -1,12 +1,13 @@
 #include "MatchManager.h"
-#include "FileHandler.h"
+#include "Parser.h"
 
 int main(int argc, char* argv[]) {
-	FileHandler fileH(argc, argv);
-	if (fileH.wrongArgumentsFormat) {
+	Parser p(argc, argv);
+	if (p.invalidArgs()) {
 		printWrongArgumentsFormatError();
 		return EXIT_FAILURE;	// Arguments Errors - can't parse!
 	}
-	fileH.parseInput();
+
+	MatchManager matchManager(p);
 	return 0;
 }

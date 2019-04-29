@@ -30,7 +30,7 @@
     <ClInclude Include="MainAux.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FileHandler.h">
+    <ClInclude Include="Parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -50,7 +50,7 @@
     <ClCompile Include="MainAux.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FileHandler.cpp">
+    <ClCompile Include="Parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

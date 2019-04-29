@@ -8,21 +8,27 @@
 
 #define BUF_SIZE 1024
 
-class FileHandler {
+class Parser {
 private:
 	bool					mazePathExists = false;
 	bool					algorithmPathExists = false;
 	bool					outputPathExists = false;
-	vector<MazePair>		m_mazeVector;
-	vector<AlgorithmPair>	m_algorithmVector;
-	vector<OutputPair>		m_outputVector;
+	bool					invalidArguments = false;
+
+	list<MazePair>			m_mazeList;
+	list<AlgorithmPair>		m_algorithmList;
+	list<ofstream>			m_outputList;
 	string					m_outputPath;
+
+	void					initVectorsByCurrDirectory(const string& path);
+	void					createMazeList(const string& path);
+	void					createAlgorithmList(const string& path);
+	void					createOutputList();
+	void					parsePairOfArguments(char * type, char * path);
+
 	Errors					m_errors;
 	GameManager *			m_manager = nullptr;
-	void					initVectorsByCurrDirectory(const string& path);
-	void					createDLVector(const string& path);
-	void					createOutputVector();
-	void					parsePairOfArguments(char * type, char * path);
+
 	void					checkErrors(void* (titleFunc));
 	inline void				pushError(ErrorType type, const string & str) { m_errors.list.push_back(ErrorPair(type, str)); }
 	string					getName(string & line);
@@ -32,12 +38,12 @@ private:
 	void					handleInvalidChar(const char c, const int i, const int j);
 
 public:
-	bool					wrongArgumentsFormat = false;
-	FileHandler(int argc, char* argv[]);
-	~FileHandler();
+	Parser(int argc, char* argv[]);
+	~Parser();
 	inline GameManager *	getManager() { return m_manager; }
 	void					parseInput();
 	void					pushActionsToOutputFile(vector<char> actions);
+	inline bool				invalidArgs() { return invalidArguments; }
 };
 
 #endif
