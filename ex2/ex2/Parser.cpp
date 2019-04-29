@@ -1,4 +1,4 @@
-#include "FileHandler.h"
+#include "Parser.h"
 
 Parser::~Parser()
 {
@@ -9,12 +9,12 @@ Parser::~Parser()
 
 
 // TODO: Finish method
-void Parser::createMazeList(const string & path)
+void Parser::createMazeVector(const string & path)
 {
 }
 
 // TODO: Finish method
-void Parser::createAlgorithmList(const string& path) {
+void Parser::createAlgorithmVector(const string& path) {
 	/*
 	FILE* dl;   // handle to read directory 
 	string cmd_str = "ls " + path + "/*.so";
@@ -52,22 +52,22 @@ void Parser::createAlgorithmList(const string& path) {
 	*/
 }
 
-void Parser::createOutputList()
+void Parser::createOutputVector()
 {
-	list<MazePair>::iterator mazeIt;
-	list<AlgorithmPair>::iterator algoIt;
-	for (mazeIt = m_mazeList.begin(); mazeIt != m_mazeList.end(); ++mazeIt) {
-		for (algoIt = m_algorithmList.begin(); algoIt != m_algorithmList.end(); ++algoIt) {
+	vector<MazePair>::iterator mazeIt;
+	vector<AlgorithmPair>::iterator algoIt;
+	for (mazeIt = m_mazeVector.begin(); mazeIt != m_mazeVector.end(); ++mazeIt) {
+		for (algoIt = m_algorithmVector.begin(); algoIt != m_algorithmVector.end(); ++algoIt) {
 			// TODO: check correctness
-			m_outputList.push_back(ofstream(m_outputPath + "/" + mazeIt->first + "_" + algoIt->first + ".output"));
+			m_outputVector.push_back(ofstream(m_outputPath + "/" + mazeIt->first + "_" + algoIt->first + ".output"));
 		}
 	}
 }
 
 void Parser::initVectorsByCurrDirectory(const string & path) {
-	if (!mazePathExists) createMazeList(path);
-	if (!algorithmPathExists) createAlgorithmList(path);
-	if (mazePathExists) createOutputList();
+	if (!mazePathExists) createMazeVector(path);
+	if (!algorithmPathExists) createAlgorithmVector(path);
+	if (mazePathExists) createOutputVector();
 }
 
 // TODO: Finish method
@@ -75,14 +75,14 @@ void Parser::parsePairOfArguments(char * type, char * path) {
 	if (strcmp(type, "-maze_path") == 0) { // .maze folder path
 		if (!mazePathExists) {
 			mazePathExists = true;
-			createMazeList(path);
+			createMazeVector(path);
 		}
 		else invalidArguments = true;
 	}
 	else if (strcmp(type, "-algorithm_path") == 0) { // .so folder path
 		if (!algorithmPathExists) {
 			algorithmPathExists = true;
-			createAlgorithmList(path);
+			createAlgorithmVector(path);
 		}
 		else invalidArguments = true;
 	}
@@ -133,39 +133,40 @@ void Parser::checkErrors(void*(titleFunc)) {
 }
 
 /* This function parses the input file and creates the manager object. */
-void Parser::parseInput() {
+MatchManager * Parser::parseInput(ifstream & fin) {
 	string line;
 
-	string name = getName(line);															// Collects maze parameters
-	int maxSteps = getIntValue(MAXSTEPS, ErrorType::MaxStepsError, line);
-	int rowsNum = getIntValue(ROWS, ErrorType::RowsError, line);
-	int colsNum = getIntValue(COLS, ErrorType::ColsError, line);
+	string name = getName(fin, line);															// Collects maze parameters
+	int maxSteps = getIntValue(fin, MAXSTEPS, ErrorType::MaxStepsError, line);
+	int rowsNum = getIntValue(fin, ROWS, ErrorType::RowsError, line);
+	int colsNum = getIntValue(fin, COLS, ErrorType::ColsError, line);
 	checkErrors((void*)printHeaderErrorTitle);
 	if (m_errors.no_parsing_Errors) {														// No errors, lines 2-4 are valid.
 		Coordinate playerLocation, endLocation;
-		MazeBoard board = getBoard(rowsNum, colsNum, playerLocation, endLocation, line);
+		MazeBoard board = getBoard(fin, rowsNum, colsNum, playerLocation, endLocation, line);
 		checkErrors((void*)printMazeErrorTitle);
 		if (m_errors.no_parsing_Errors)							// No errors, maze file is valid - creates a Manager object
-			m_manager = new GameManager(name, maxSteps, rowsNum, colsNum,
-				board, playerLocation, endLocation);
+			return new MatchManager(name, maxSteps, rowsNum, colsNum,
+				board, playerLocation, endLocation, m_algorithmVector);
 	}
+	return nullptr;
 }
 
 /* This function retrieves the name of the maze. */
-string Parser::getName(string & line) {
-	if (getline(m_mazeFile, line)) {
+string Parser::getName(ifstream & fin, string & line) {
+	if (getline(fin, line)) {
 		return line;
 	}
 	return nullptr;
 }
 
 /* This function retrieves the integer value for lines 2-4. */
-int Parser::getIntValue(const string & input, const ErrorType error, string & line) {
+int Parser::getIntValue(ifstream & fin, const string & input, const ErrorType error, string & line) {
 	const regex reg("\\s*" + input + "\\s*=\\s*[1-9][0-9]*\\s*$");
 
 	const regex numReg("[1-9][0-9]*");
 	smatch match;
-	if (getline(m_mazeFile, line)) {
+	if (getline(fin, line)) {
 		if (!regex_match(line, reg)) {
 			pushError(error, line);
 			return -1;
@@ -180,12 +181,12 @@ int Parser::getIntValue(const string & input, const ErrorType error, string & li
 /*	params: rows, col - parsed from maze file; references to playerLocation and endLocation that will be filled in this function;
 			refernce to line string which we fill with lines from the input and parse the file with.
 	return: A maze board object (two-dimensional character vector) */
-MazeBoard Parser::getBoard(const int rows, const int cols, Coordinate & playerLocation, Coordinate & endLocation, string & line) {
+MazeBoard Parser::getBoard(ifstream & fin, const int rows, const int cols, Coordinate & playerLocation, Coordinate & endLocation, string & line) {
 	MazeBoard board;
 	bool seenPlayerChar = false, seenEndChar = false;
 	for (int i = 0; i < rows; i++) {
 		MazeRow row;
-		if (getline(m_mazeFile, line)) {											// Succeeded reading a line - fills MazeRow according to line
+		if (getline(fin, line)) {											// Succeeded reading a line - fills MazeRow according to line
 			for (int j = 0; j < min(cols, (int)line.length()); j++) {
 				if (line[j] == PLAYER_CHAR)
 					handleSpecialChar(PLAYER_CHAR, playerLocation, i, j, seenPlayerChar, line, ErrorType::MoreThanOnePlayerChar);
@@ -236,7 +237,7 @@ void Parser::handleInvalidChar(const char c, const int i, const int j) {
 
 /*	params: vector of game actions.
 	This function pushes the actions vector into the output file. */
-void Parser::pushActionsToOutputFile(vector<char> actions) {
+void Parser::pushActionsToOutputFile(ofstream & fout, vector<char> actions) {
 	for (const char & c : actions)
-		m_outputFile << c << endl;
+		fout << c << endl;
 }

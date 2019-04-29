@@ -7,7 +7,16 @@ int main(int argc, char* argv[]) {
 		printWrongArgumentsFormatError();
 		return EXIT_FAILURE;	// Arguments Errors - can't parse!
 	}
-
-	MatchManager matchManager(p);
+	vector<MatchManager *> matchVector;
+	vector<MazePair> mazeVector = p.getMazeVector();
+	for (int i = 0; i < mazeVector.size(); i++) {
+		MatchManager * m = p.parseInput(mazeVector[i].second);
+		if (m == nullptr) {
+			// TODO: deallocate all memory allocations
+			return EXIT_FAILURE;
+		}
+		matchVector.push_back(m);
+	}
+	
 	return 0;
 }
