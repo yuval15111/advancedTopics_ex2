@@ -41,7 +41,7 @@ using namespace std;
 using MazeRow = vector<char>;
 using MazeBoard = vector<MazeRow>;
 using Coordinate = pair<int, int>;
-using MazePair = pair<string, ifstream&>; // the name of the maze and the stream
+using MazePair = pair<string, ifstream*>; // the name of the maze and the stream
 using AlgorithmPair = pair<string, void*>; // the name of the algorithm and the .so file
 using OutputPair = pair<string, ofstream&>; // the name of the output file and the stream
 using ErrorPair = pair<ErrorType, string>;

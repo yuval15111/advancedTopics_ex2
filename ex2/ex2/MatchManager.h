@@ -18,6 +18,7 @@ private:
 	Coordinate				m_endLocation;
 	Coordinate				m_bookmarkVector;
 	vector<AlgorithmPair>&	m_algorithmVector;
+	vector<unique_ptr<AbstractAlgorithm>> v;
 
 public:
 	MatchManager(string name, int maxSteps, int rowsNum, int colsNum,

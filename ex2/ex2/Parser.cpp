@@ -11,6 +11,33 @@ Parser::~Parser()
 // TODO: Finish method
 void Parser::createMazeVector(const string & path)
 {
+	FILE* dl;  // handle to read directory 
+	string command_str = "ls " + path + "/*maze";
+	char in_buf[BUF_SIZE];
+	// get the names of all the .maze  files in the current dir 
+	dl = popen(command_str.c_str(), "r");
+	if (!dl) {
+		cout << "Error: error in popen command. " << strerror(errno) << endl;
+		exit(EXIT_FAILURE); //TODO: check how to exit
+	}
+	
+	while (fgets(in_buf, BUF_SIZE, dl)) {
+		// trim off the whitespace 
+		char* ws = strpbrk(in_buf, " \t\n");
+		if (ws) *ws = '\0';
+		string filename(in_buf);
+		size_t index = filename.find("_308243351_");
+		if ((index != string::npos) && (endsWith(filename, ".maze"))) {
+			string mazeName = filename.substr(index, filename.length() - 5);
+			ifstream fin;
+			fin.open(filename.c_str());
+			if (!fin.is_open()) {
+				exit(EXIT_FAILURE); // TODO: check how to exit
+			}
+			m_mazeVector.push_back(make_pair(mazeName, &fin));
+		}
+	}
+	pclose(dl);
 }
 
 // TODO: Finish method
@@ -125,7 +152,7 @@ void Parser::checkErrors(void*(titleFunc)) {
 }
 
 /* This function parses the input file and creates the manager object. */
-MatchManager * Parser::parseInput(ifstream & fin) {
+MatchManager * Parser::parseInput(ifstream * fin) {
 	string line;
 
 	string name = getName(fin, line);															// Collects maze parameters
@@ -145,20 +172,20 @@ MatchManager * Parser::parseInput(ifstream & fin) {
 }
 
 /* This function retrieves the name of the maze. */
-string Parser::getName(ifstream & fin, string & line) {
-	if (getline(fin, line)) {
+string Parser::getName(ifstream * fin, string & line) {
+	if (getline(*fin, line)) {
 		return line;
 	}
 	return nullptr;
 }
 
 /* This function retrieves the integer value for lines 2-4. */
-int Parser::getIntValue(ifstream & fin, const string & input, const ErrorType error, string & line) {
+int Parser::getIntValue(ifstream * fin, const string & input, const ErrorType error, string & line) {
 	const regex reg("\\s*" + input + "\\s*=\\s*[1-9][0-9]*\\s*$");
 
 	const regex numReg("[1-9][0-9]*");
 	smatch match;
-	if (getline(fin, line)) {
+	if (getline(*fin, line)) {
 		if (!regex_match(line, reg)) {
 			pushError(error, line);
 			return -1;
@@ -173,12 +200,12 @@ int Parser::getIntValue(ifstream & fin, const string & input, const ErrorType er
 /*	params: rows, col - parsed from maze file; references to playerLocation and endLocation that will be filled in this function;
 			refernce to line string which we fill with lines from the input and parse the file with.
 	return: A maze board object (two-dimensional character vector) */
-MazeBoard Parser::getBoard(ifstream & fin, const int rows, const int cols, Coordinate & playerLocation, Coordinate & endLocation, string & line) {
+MazeBoard Parser::getBoard(ifstream * fin, const int rows, const int cols, Coordinate & playerLocation, Coordinate & endLocation, string & line) {
 	MazeBoard board;
 	bool seenPlayerChar = false, seenEndChar = false;
 	for (int i = 0; i < rows; i++) {
 		MazeRow row;
-		if (getline(fin, line)) {											// Succeeded reading a line - fills MazeRow according to line
+		if (getline(*fin, line)) {											// Succeeded reading a line - fills MazeRow according to line
 			for (int j = 0; j < min(cols, (int)line.length()); j++) {
 				if (line[j] == PLAYER_CHAR)
 					handleSpecialChar(PLAYER_CHAR, playerLocation, i, j, seenPlayerChar, line, ErrorType::MoreThanOnePlayerChar);
