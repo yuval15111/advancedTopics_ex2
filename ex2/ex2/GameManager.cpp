@@ -8,7 +8,7 @@ GameManager::~GameManager()
 /* main function of manager, where the game flow is */
 vector<char> GameManager::play() {
 	vector<char> moveList;
-	int seq;
+	/*int seq;
 	m_player = new Player();										// PLAYER: LET'S GO!
 	for (int i = 1; i <= m_maxSteps; ++i) {
 		Move m = m_player->move();							// PLAYER: THIS IS MY MOVE!
@@ -32,7 +32,7 @@ vector<char> GameManager::play() {
 	}
 	moveList.push_back('X');
 	printLostMessage(m_maxSteps);									// MANAGER: YOU SHOULD TRY HARDER NEXT TIME. CYA!
-	return moveList;
+	*/return moveList;
 }
 
 void GameManager::execute(Move a, const bool undo)

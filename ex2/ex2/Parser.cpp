@@ -32,24 +32,16 @@ void Parser::createAlgorithmVector(const string& path) {
 		string filename(in_buf);
 		size_t index = filename.find("_308243351_");
 		if ((index != string::npos) && (endsWith(filename, ".so"))) {
-			string id = filename.substr(index + 10, filename.length() - 3 - (index + 10));
-			//cout << id << endl;
+			string algorithmName = filename.substr(index, filename.length() - 3);
 			dlib = dlopen(filename.c_str(), RTLD_LAZY);
 			if (dlib == NULL) {
 				cerr << dlerror() << endl;
 				exit(EXIT_FAILURE);
 			}
-			m_algorithmVector.push_back(make_pair(,dlib));
+			m_algorithmVector.push_back(make_pair(algorithmName, dlib));
 		}
 	}
-
 	pclose(dl);
-
-	// add the players to the playerList
-	for (auto pair : id2factory) {
-		players.push_back(TournamentPlayer(pair.second, pair.first));
-		//cout << pair.first << endl;
-	}
 }
 
 void Parser::createOutputVector()
