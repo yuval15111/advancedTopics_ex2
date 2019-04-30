@@ -12,7 +12,8 @@ private:
 	MazeBoard 				m_board;
 	Coordinate 				m_playerLocation;
 	Coordinate				m_endLocation;
-	vector<Coordinate>		m_bookmarkVector;
+	map<Coordinate, int>	m_bookmarkMap;
+	int						m_bookmarkCount = 0;
 	//Player *				m_player = nullptr;
 
 public:
@@ -20,15 +21,15 @@ public:
 		MazeBoard board, Coordinate playerLocation, Coordinate endLocation) :
 		m_name(name), m_maxSteps(maxSteps), m_rowsNum(rowsNum),
 		m_colsNum(colsNum), m_board(board), m_playerLocation(playerLocation),
-		m_endLocation(endLocation), m_bookmarkVector() {}; // TODO: set bookmark with (0,0)
+		m_endLocation(endLocation), m_bookmarkMap() {}; // TODO: set bookmark with {(0,0), 0}
 	~GameManager();
 
-	inline void				updateBookmark() { m_bookmarkVector = m_playerLocation; }
+	inline void				updateBookmark() { m_bookmarkMap[m_playerLocation] = m_bookmarkCount++; }
 	void					execute(Move a, const bool undo = false);
 	inline char				getCoordValue() { return m_board[m_playerLocation.first][m_playerLocation.second]; }
 	inline bool				playerHitsEndChar() { return getCoordValue() == END_CHAR; }
 	inline bool				playerHitsWallChar() { return getCoordValue() == WALL_CHAR; }
-	inline bool				playerHitsBookmark() { return m_playerLocation == m_bookmarkVector; }
+	inline int				playerHitsBookmark() { return m_bookmarkMap.find(m_playerLocation) != m_bookmarkMap.end() ? m_bookmarkMap[m_playerLocation] : -1; }
 	inline int				getMaxSteps() { return m_maxSteps; }
 	vector<char>			play();
 };

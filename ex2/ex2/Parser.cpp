@@ -1,5 +1,5 @@
 #include "Parser.h"
-
+#include <algorithm>
 Parser::~Parser()
 {
 	//if (m_manager != nullptr) delete m_manager;
@@ -15,41 +15,41 @@ void Parser::createMazeVector(const string & path)
 
 // TODO: Finish method
 void Parser::createAlgorithmVector(const string& path) {
-	/*
-	FILE* dl;   // handle to read directory 
-	string cmd_str = "ls " + path + "/*.so";
-	const char *command_str = cmd_str.c_str();  // command string to get dynamic lib names
-	char in_buf[BUF_SIZE];
-	char curDLName[BUF_SIZE]; //name of the current dl
-	void *dlib;
-	dl = _popen(command_str, "r"); // TODO: in linux, delete underscore!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	FILE* dl;  // handle to read directory 
+	string command_str = "ls " + path + "/*so";
+	char in_buf[BUF_SIZE]; // input buffer for lib names 
+	// get the names of all the dynamic libs (.so  files) in the current dir 
+	dl = popen(command_str.c_str(), "r");
 	if (!dl) {
-		_pclose(dl);
-		return false;
+		cout << "Error: error in popen command. " << strerror(errno) << endl;
+		exit(EXIT_FAILURE); //TODO: check if exitting is legal
 	}
+	void* dlib;
 	while (fgets(in_buf, BUF_SIZE, dl)) {
 		// trim off the whitespace 
-		char *ws = strpbrk(in_buf, " \t\n");
+		char* ws = strpbrk(in_buf, " \t\n");
 		if (ws) *ws = '\0';
-		// append ./ to the front of the lib name
-		sprintf(curDLName, "%s", in_buf);
-		dlib = dlopen(curDLName, RTLD_NOW);
-		if (dlib == NULL) {
-			cerr << dlerror() << endl;
-			_pclose(dl);
-			exit(-1);
+		string filename(in_buf);
+		size_t index = filename.find("_308243351_");
+		if ((index != string::npos) && (endsWith(filename, ".so"))) {
+			string id = filename.substr(index + 10, filename.length() - 3 - (index + 10));
+			//cout << id << endl;
+			dlib = dlopen(filename.c_str(), RTLD_LAZY);
+			if (dlib == NULL) {
+				cerr << dlerror() << endl;
+				exit(EXIT_FAILURE);
+			}
+			m_algorithmVector.push_back(make_pair(,dlib));
 		}
-		// add the handle to our list
-		m_algorithmDL.push_back(dlib);
 	}
-	if (m_mazeFiles.size() == 0)
-	{
-		cout << "no *.so files found." << endl;
-		_pclose(dl);
-		return false;
+
+	pclose(dl);
+
+	// add the players to the playerList
+	for (auto pair : id2factory) {
+		players.push_back(TournamentPlayer(pair.second, pair.first));
+		//cout << pair.first << endl;
 	}
-	_pclose(dl);
-	*/
 }
 
 void Parser::createOutputVector()

@@ -5,7 +5,7 @@
 #include "MatchManager.h"
 #include <regex>
 #include <stdio.h>
-//#include <dlfcn.h>
+#include <dlfcn.h>
 
 #define BUF_SIZE 1024
 

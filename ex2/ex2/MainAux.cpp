@@ -96,7 +96,7 @@ bool fileExists(const char* path) {
 	return (stat(path, &buf) == 0);
 }
 
-char getActionChar(const Move& a) {
+char getMoveChar(const Move& a) {
 	switch (a) {
 	case Move::UP:
 		return 'U';
@@ -114,4 +114,10 @@ char getActionChar(const Move& a) {
 void updateCoordinate(Coordinate & c, const int i, const int j) {
 	c.first = i;
 	c.second = j;
+}
+
+bool endsWith(const string & mainStr, const string & toMatch)
+{
+	return mainStr.size() >= toMatch.size() &&
+		mainStr.compare(mainStr.size() - toMatch.size(), toMatch.size(), toMatch) == 0;
 }

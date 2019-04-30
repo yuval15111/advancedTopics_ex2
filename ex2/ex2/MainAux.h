@@ -83,7 +83,8 @@ struct Errors {
 };
 
 bool fileExists(const char* path);
-char getActionChar(const Move& a);
+char getMoveChar(const Move& a);
 void updateCoordinate(Coordinate & c, const int i, const int j);
+bool endsWith(const string & mainStr, const string & toMatch);
 
 #endif
