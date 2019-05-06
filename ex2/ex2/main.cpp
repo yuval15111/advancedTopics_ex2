@@ -8,15 +8,17 @@ int main(int argc, char* argv[]) {
 		return EXIT_FAILURE;	// Arguments Errors - can't parse!
 	}
 	vector<MatchManager *> matchVector;
-	vector<MazePair> mazeVector = p.getMazeVector();
+	vector<MazePair> & mazeVector = p.getMazeVector();
 	for (int i = 0; i < mazeVector.size(); i++) {
 		MatchManager * m = p.parseInput(mazeVector[i].second);
 		if (m == nullptr) {
 			// TODO: deallocate all memory allocations
 			return EXIT_FAILURE;
 		}
+		m->createGameManagers();
+		m->activateGameManagers();
 		matchVector.push_back(m);
 	}
-	
+	pushLogsToOutputFiles(matchVector, p.outputPathExists());
 	return 0;
 }

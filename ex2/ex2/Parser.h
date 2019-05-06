@@ -1,5 +1,5 @@
-#ifndef FILEHANDLER_H
-#define FILEHANDLER_H
+#ifndef PARSER_H
+#define PARSER_H
 
 #include "GameManager.h"
 #include "MatchManager.h"
@@ -11,10 +11,10 @@
 
 class Parser {
 private:
-	bool						mazePathExists = false;
-	bool						algorithmPathExists = false;
-	bool						outputPathExists = false;
-	bool						invalidArguments = false;
+	bool						m_mazePathExists = false;
+	bool						m_algorithmPathExists = false;
+	bool						m_outputPathExists = false;
+	bool						m_invalidArguments = false;
 
 	vector<MazePair>			m_mazeVector;
 	vector<AlgorithmPair>		m_algorithmVector;
@@ -45,6 +45,7 @@ public:
 	void						pushActionsToOutputFile(ofstream & fout, vector<char> actions);
 	inline bool					invalidArgs() { return invalidArguments; }
 	inline vector<MazePair>&	getMazeVector() { return m_mazeVector; }
+	inline bool					outputPathExists() { return m_outputPathExists; }
 };
 
 #endif

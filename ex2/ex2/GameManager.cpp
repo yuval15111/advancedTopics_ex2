@@ -1,5 +1,13 @@
 #include "GameManager.h"
 
+GameManager::GameManager(	string name, int maxSteps, int rowsNum, int colsNum, MazeBoard board, Coordinate playerLocation,
+							Coordinate endLocation, unique_ptr<AbstractAlgorithm> algorithm) :
+						m_name(name), m_maxSteps(maxSteps), m_rowsNum(rowsNum),
+						m_colsNum(colsNum), m_board(board), m_playerLocation(playerLocation),
+						m_endLocation(endLocation), m_bookmarkMap() {
+	m_algorithm = move(algorithm);
+}
+
 GameManager::~GameManager()
 {
 	//delete m_player;
@@ -8,10 +16,9 @@ GameManager::~GameManager()
 /* main function of manager, where the game flow is */
 vector<char> GameManager::play() {
 	vector<char> moveList;
-	/*int seq;
-	m_player = new Player();										// PLAYER: LET'S GO!
+	int seq;
 	for (int i = 1; i <= m_maxSteps; ++i) {
-		Move m = m_player->move();							// PLAYER: THIS IS MY MOVE!
+		Move m = m_algorithm->move();							// PLAYER: THIS IS MY MOVE!
 		moveList.push_back(getMoveChar(m));
 		if (m == Move::BOOKMARK)	updateBookmark();
 		else {
@@ -22,17 +29,17 @@ vector<char> GameManager::play() {
 				return moveList;
 			}
 			else if (playerHitsWallChar()) {
-				m_player->hitWall();								// PLAYER: OUCH!!
+				m_algorithm->hitWall();								// PLAYER: OUCH!!
 				execute(m, true); 									// MANAGER: SORRY PAL, TRY AGAIN
 			}
 			else if ((seq = playerHitsBookmark()) != -1) {			// MANAGER: YOU'RE RIGHT... HERE! <POINTING AT MAP>
-				m_player->hitBookmark(seq);							// PLAYER: OHHH I REMEMBER THAT PLACE!
+				m_algorithm->hitBookmark(seq);							// PLAYER: OHHH I REMEMBER THAT PLACE!
 			}
 		}
 	}
 	moveList.push_back('X');
 	printLostMessage(m_maxSteps);									// MANAGER: YOU SHOULD TRY HARDER NEXT TIME. CYA!
-	*/return moveList;
+	return moveList;
 }
 
 void GameManager::execute(Move a, const bool undo)

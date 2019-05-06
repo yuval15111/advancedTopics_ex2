@@ -8,7 +8,6 @@ Parser::~Parser()
 }
 
 
-// TODO: Finish method
 void Parser::createMazeVector(const string & path)
 {
 	FILE* dl;  // handle to read directory 
@@ -40,7 +39,6 @@ void Parser::createMazeVector(const string & path)
 	pclose(dl);
 }
 
-// TODO: Finish method
 void Parser::createAlgorithmVector(const string& path) {
 	FILE* dl;  // handle to read directory 
 	string command_str = "ls " + path + "/*so";
@@ -84,35 +82,35 @@ void Parser::createOutputVector()
 }
 
 void Parser::initVectorsByCurrDirectory(const string & path) {
-	if (!mazePathExists) createMazeVector(path);
-	if (!algorithmPathExists) createAlgorithmVector(path);
-	if (mazePathExists) createOutputVector();
+	if (!m_mazePathExists) createMazeVector(path);
+	if (!m_algorithmPathExists) createAlgorithmVector(path);
+	if (m_outputPathExists) createOutputVector();
 }
 
 // TODO: Finish method
 void Parser::parsePairOfArguments(char * type, char * path) {
 	if (strcmp(type, "-maze_path") == 0) { // .maze folder path
-		if (!mazePathExists) {
-			mazePathExists = true;
+		if (!m_mazePathExists) {
+			m_mazePathExists = true;
 			createMazeVector(path);
 		}
-		else invalidArguments = true;
+		else m_invalidArguments = true;
 	}
 	else if (strcmp(type, "-algorithm_path") == 0) { // .so folder path
-		if (!algorithmPathExists) {
-			algorithmPathExists = true;
+		if (!m_algorithmPathExists) {
+			m_algorithmPathExists = true;
 			createAlgorithmVector(path);
 		}
-		else invalidArguments = true;
+		else m_invalidArguments = true;
 	}
 	else if (strcmp(type, "-output") == 0) { // .output folder path
-		if (!outputPathExists) {
-			outputPathExists = true;
+		if (!m_outputPathExists) {
+			m_outputPathExists = true;
 			m_outputPath = path;
 		}
-		else invalidArguments = true;
+		else m_invalidArguments = true;
 	}
-	else invalidArguments = true;
+	else m_invalidArguments = true;
 }
 
 /*	In the constructor we initialize maze, algorithm output vectors.
@@ -129,7 +127,7 @@ Parser::Parser(int argc, char * argv[]) {
 		initVectorsByCurrDirectory(argv[0]);
 		break;
 	default:
-		invalidArguments = true;
+		m_invalidArguments = true;
 		break;
 	}
 }

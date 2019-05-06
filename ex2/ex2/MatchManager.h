@@ -18,7 +18,9 @@ private:
 	Coordinate				m_endLocation;
 	Coordinate				m_bookmarkVector;
 	vector<AlgorithmPair>&	m_algorithmVector;
-	vector<unique_ptr<AbstractAlgorithm>> v;
+	vector<GameManager>		m_gameManagerVector;
+	vector<vector<char>>	m_moveListVector;
+	//vector<unique_ptr<AbstractAlgorithm>> v;
 
 public:
 	MatchManager(string name, int maxSteps, int rowsNum, int colsNum,
@@ -26,7 +28,9 @@ public:
 		m_name(name), m_maxSteps(maxSteps), m_rowsNum(rowsNum),
 		m_colsNum(colsNum), m_board(board), m_playerLocation(playerLocation),
 		m_endLocation(endLocation), m_bookmarkVector(playerLocation), m_algorithmVector(algoVec) {};
-
+	void createGameManagers();
+	void activateGameManagers();
 	void registerAlgorithm(function<unique_ptr<AbstractAlgorithm>()> factoryMethod);
+	inline int algorithmsCount() { return m_algorithmVector.size(); }
 	static MatchManager& getMatchManager();
 };

@@ -2,26 +2,24 @@
 #define GAMEMANAGER_H
 
 #include "MainAux.h"
+#include "MatchManager.h"
 
 class GameManager {
 public:
 
 private:
-	string 					m_name;
-	int 					m_maxSteps, m_rowsNum, m_colsNum;
-	MazeBoard 				m_board;
-	Coordinate 				m_playerLocation;
-	Coordinate				m_endLocation;
-	map<Coordinate, int>	m_bookmarkMap;
-	int						m_bookmarkCount = 0;
-	//Player *				m_player = nullptr;
+	string 							m_name;
+	int 							m_maxSteps, m_rowsNum, m_colsNum;
+	MazeBoard 						m_board;
+	Coordinate 						m_playerLocation;
+	Coordinate						m_endLocation;
+	map<Coordinate, int>			m_bookmarkMap;
+	int								m_bookmarkCount = 0;
+	unique_ptr<AbstractAlgorithm> 	m_algorithm;
 
 public:
 	GameManager(string name, int maxSteps, int rowsNum, int colsNum,
-		MazeBoard board, Coordinate playerLocation, Coordinate endLocation) :
-		m_name(name), m_maxSteps(maxSteps), m_rowsNum(rowsNum),
-		m_colsNum(colsNum), m_board(board), m_playerLocation(playerLocation),
-		m_endLocation(endLocation), m_bookmarkMap() {}; // TODO: set bookmark with {(0,0), 0}
+		MazeBoard board, Coordinate playerLocation, Coordinate endLocation, unique_ptr<AbstractAlgorithm> algorithm); // TODO: set bookmark with {(0,0), 0}
 	~GameManager();
 
 	inline void				updateBookmark() { m_bookmarkMap[m_playerLocation] = m_bookmarkCount++; }
