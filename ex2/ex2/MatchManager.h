@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MATCHMANAGER_H
+#define MATCHMANAGER_H
 
 #include "AlgorithmRegistration.h"
 #include "Parser.h"
@@ -34,3 +35,5 @@ public:
 	inline int algorithmsCount() { return m_algorithmVector.size(); }
 	static MatchManager& getMatchManager();
 };
+
+#endif
