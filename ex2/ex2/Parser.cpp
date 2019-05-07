@@ -63,7 +63,9 @@ void Parser::createAlgorithmVector(const string& path) {
 				cerr << dlerror() << endl;
 				exit(EXIT_FAILURE);
 			}
-			m_algorithmVector.push_back(make_pair(algorithmName, dlib));
+			dlVector.push_back(dlib);
+			//m_algorithmVector.push_back(make_pair(algorithmName, dlib));
+			m_algorithmNameVector.push_back(algorithmName);
 		}
 	}
 	pclose(dl);
@@ -72,11 +74,9 @@ void Parser::createAlgorithmVector(const string& path) {
 void Parser::createOutputVector()
 {
 	vector<MazePair>::iterator mazeIt;
-	vector<AlgorithmPair>::iterator algoIt;
 	for (mazeIt = m_mazeVector.begin(); mazeIt != m_mazeVector.end(); ++mazeIt) {
-		for (algoIt = m_algorithmVector.begin(); algoIt != m_algorithmVector.end(); ++algoIt) {
-			// TODO: check correctness
-			m_outputVector.push_back(ofstream(m_outputPath + "/" + mazeIt->first + "_" + algoIt->first + ".output"));
+		for (string & algoName : m_algorithmNameVector) {
+			m_outputVector.push_back(ofstream(m_outputPath + "/" + mazeIt->first + "_" + algoName + ".output"));
 		}
 	}
 }
@@ -164,7 +164,7 @@ MatchManager * Parser::parseInput(ifstream * fin) {
 		checkErrors((void*)printMazeErrorTitle);
 		if (m_errors.no_parsing_Errors)							// No errors, maze file is valid - creates a Manager object
 			return new MatchManager(name, maxSteps, rowsNum, colsNum,
-				board, playerLocation, endLocation, m_algorithmVector);
+				board, playerLocation, endLocation, m_algorithmNameVector);
 	}
 	return nullptr;
 }

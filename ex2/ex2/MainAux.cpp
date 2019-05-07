@@ -124,10 +124,10 @@ bool endsWith(const string & mainStr, const string & toMatch)
 
 void pushLogsToOutputFiles(vector<MatchManager*> matchVector, bool outputPathExists)
 {
-	/*for (int i = 0; i < matchVector.size(); i++) {
+	for (int i = 0; i < matchVector.size(); i++) {
 		for (int j = 0; j < matchVector[i]->algorithmsCount(); j++) {
 
 		}
 		matchVector[i]->
-	}*/
+	}
 }

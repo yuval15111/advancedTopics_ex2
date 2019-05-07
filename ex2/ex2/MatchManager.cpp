@@ -9,9 +9,9 @@ void MatchManager::createGameManagers()
 {
 	// let's assume we have an AbstractAlgorithm vector:
 	vector<unique_ptr<AbstractAlgorithm>> algorithmVec;
-	for (vector<unique_ptr<AbstractAlgorithm>>::iterator it = algorithmVec.begin(); it != algorithmVec.end(); ++it) {
-		m_gameManagerVector.push_back(GameManager(	m_name, m_maxSteps, m_rowsNum, m_colsNum,
-													m_board, m_playerLocation, m_endLocation, std::move(it->get)));
+	for (auto& factoryMethod : factoryVector) {
+		m_gameManagerVector.push_back(GameManager(m_name, m_maxSteps, m_rowsNum, m_colsNum,
+			m_board, m_playerLocation, m_endLocation, factoryMethod()));
 	}
 }
 

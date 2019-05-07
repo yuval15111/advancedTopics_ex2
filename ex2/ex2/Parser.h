@@ -17,9 +17,11 @@ private:
 	bool						m_invalidArguments = false;
 
 	vector<MazePair>			m_mazeVector;
-	vector<AlgorithmPair>		m_algorithmVector;
+	//vector<AlgorithmPair>		m_algorithmVector;
+	vector<string>				m_algorithmNameVector;
 	vector<ofstream>			m_outputVector;
 	string						m_outputPath;
+	vector<void *>				dlVector;
 	
 	void						initVectorsByCurrDirectory(const string& path);
 	void						createMazeVector(const string& path);
