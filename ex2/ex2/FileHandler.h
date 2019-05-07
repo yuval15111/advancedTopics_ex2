@@ -1,7 +1,7 @@
 #ifndef FILEHANDLER_H
 #define FILEHANDLER_H
 
-#include "GameManager.h"
+#include "MatchManager.h"
 #include <regex>
 #include <stdio.h>
 #include <dlfcn.h>
