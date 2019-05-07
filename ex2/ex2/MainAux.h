@@ -11,6 +11,7 @@
 #include <utility>
 #include <fstream>
 #include <sys/stat.h>
+#include <memory>
 
 #include "AbstractAlgorithm.h"
 
