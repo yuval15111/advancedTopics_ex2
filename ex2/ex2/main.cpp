@@ -9,7 +9,7 @@ int main(int argc, char* argv[]) {
 	}
 	vector<MatchManager *> matchVector;
 	vector<MazePair> & mazeVector = p.getMazeVector();
-	for (int i = 0; i < mazeVector.size(); i++) {
+	for (unsigned int i = 0; i < mazeVector.size(); i++) {
 		MatchManager * m = p.parseInput(mazeVector[i].second);
 		if (m == nullptr) {
 			// TODO: deallocate all memory allocations

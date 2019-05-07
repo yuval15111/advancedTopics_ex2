@@ -43,7 +43,7 @@ public:
 	~Parser();
 	MatchManager *				parseInput(ifstream * fin);
 	void						pushActionsToOutputFile(ofstream & fout, vector<char> actions);
-	inline bool					invalidArgs() { return invalidArguments; }
+	inline bool					invalidArgs() { return m_invalidArguments; }
 	inline vector<MazePair>&	getMazeVector() { return m_mazeVector; }
 	inline bool					outputPathExists() { return m_outputPathExists; }
 };
