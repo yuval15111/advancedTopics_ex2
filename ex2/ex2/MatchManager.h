@@ -8,10 +8,11 @@
 using namespace std;
 
 class MatchManager {
-	static MatchManager matchManagerObj;
+	
 	vector <function<unique_ptr<AbstractAlgorithm>()>> factoryVector;
 
 private:
+	static MatchManager		matchManagerObj;
 	string 					m_name;
 	int 					m_maxSteps, m_rowsNum, m_colsNum;
 	MazeBoard 				m_board;
@@ -24,6 +25,7 @@ private:
 	//vector<unique_ptr<AbstractAlgorithm>> v;
 
 public:
+	friend class AlgorithmRegistration;
 	MatchManager(string name, int maxSteps, int rowsNum, int colsNum,
 		MazeBoard board, Coordinate playerLocation, Coordinate endLocation, vector<AlgorithmPair> & algoVec) :
 		m_name(name), m_maxSteps(maxSteps), m_rowsNum(rowsNum),
