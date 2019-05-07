@@ -261,7 +261,8 @@ void FileHandler::pushActionsToOutputFile(ofstream & fout, vector<char> actions)
 
 void FileHandler::pushLogsToOutputFiles(vector<MatchManager*> matchVector, bool outputPathExists)
 {
-	for (int i = 0; i < matchVector.size(); i++) {
+	outputPathExists = false;
+	for (unsigned int i = 0; i < matchVector.size(); i++) {
 		/*for (int j = 0; j < matchVector[i]->algorithmsCount(); j++) {
 
 		}
