@@ -18,6 +18,6 @@ int main(int argc, char* argv[]) {
 		m->activateGameManagers();
 		matchVector.push_back(m);
 	}
-	pushLogsToOutputFiles(matchVector, fh.outputPathExists());
+	fh.pushLogsToOutputFiles(matchVector, fh.outputPathExists());
 	return 0;
 }

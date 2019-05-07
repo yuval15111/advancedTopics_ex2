@@ -47,6 +47,7 @@ public:
 	inline bool					invalidArgs() { return m_invalidArguments; }
 	inline vector<MazePair>&	getMazeVector() { return m_mazeVector; }
 	inline bool					outputPathExists() { return m_outputPathExists; }
+	void						pushLogsToOutputFiles(vector<MatchManager *> matchVector, bool outputPathExists);
 };
 
 #endif

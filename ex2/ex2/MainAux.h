@@ -13,7 +13,6 @@
 #include <sys/stat.h>
 
 #include "AbstractAlgorithm.h"
-#include "MatchManager.h"
 
 #define MAX_INT 2147483647
 #define ABS(x,y) x > y ? x - y : y - x
@@ -87,6 +86,6 @@ bool fileExists(const char* path);
 char getMoveChar(const Move& a);
 void updateCoordinate(Coordinate & c, const int i, const int j);
 bool endsWith(const string & mainStr, const string & toMatch);
-void pushLogsToOutputFiles(vector<MatchManager *> matchVector, bool outputPathExists);
+//void pushLogsToOutputFiles(vector<MatchManager *> matchVector, bool outputPathExists);
 
 #endif
