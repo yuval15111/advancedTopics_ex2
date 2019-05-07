@@ -2,7 +2,7 @@
 #define MATCHMANAGER_H
 
 #include "AlgorithmRegistration.h"
-#include "Parser.h"
+#include "GameManager.h"
 #include <vector>
 #include <functional>
 using namespace std;

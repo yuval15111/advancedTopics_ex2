@@ -2,7 +2,6 @@
 #define GAMEMANAGER_H
 
 #include "MainAux.h"
-#include "MatchManager.h"
 
 class GameManager {
 public:
