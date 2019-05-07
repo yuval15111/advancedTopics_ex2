@@ -21,14 +21,14 @@
   <ItemGroup>
     <ClInclude Include="AbstractAlgorithm.h" />
     <ClInclude Include="AlgorithmRegistration.h" />
-    <ClInclude Include="Parser.h" />
+    <ClInclude Include="FileHandler.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="MainAux.h" />
     <ClInclude Include="MatchManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AlgorithmRegistration.cpp" />
-    <ClCompile Include="Parser.cpp" />
+    <ClCompile Include="FileHandler.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainAux.cpp" />

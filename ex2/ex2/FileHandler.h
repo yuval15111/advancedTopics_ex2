@@ -1,5 +1,5 @@
-#ifndef PARSER_H
-#define PARSER_H
+#ifndef FILEHANDLER_H
+#define FILEHANDLER_H
 
 #include "GameManager.h"
 #include "MatchManager.h"
@@ -9,7 +9,7 @@
 
 #define BUF_SIZE 1024
 
-class Parser {
+class FileHandler {
 private:
 	bool						m_mazePathExists = false;
 	bool						m_algorithmPathExists = false;
@@ -41,8 +41,8 @@ private:
 	void						handleInvalidChar(const char c, const int i, const int j);
 
 public:
-	Parser(int argc, char* argv[]);
-	~Parser();
+	FileHandler(int argc, char* argv[]);
+	~FileHandler();
 	MatchManager *				parseInput(ifstream * fin);
 	void						pushActionsToOutputFile(ofstream & fout, vector<char> actions);
 	inline bool					invalidArgs() { return m_invalidArguments; }
