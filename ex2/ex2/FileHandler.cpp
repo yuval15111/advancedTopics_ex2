@@ -11,7 +11,7 @@ FileHandler::~FileHandler()
 void FileHandler::createMazeVector(const string & path)
 {
 	FILE* dl;  // handle to read directory 
-	string command_str = "ls " + path + "/*maze";
+	string command_str = "ls " + path + "/*.maze";
 	char in_buf[BUF_SIZE];
 	// get the names of all the .maze  files in the current dir 
 	dl = popen(command_str.c_str(), "r");
@@ -41,7 +41,7 @@ void FileHandler::createMazeVector(const string & path)
 
 void FileHandler::createAlgorithmVector(const string& path) {
 	FILE* dl;  // handle to read directory 
-	string command_str = "ls " + path + "/*so";
+	string command_str = "ls " + path + "/*.so";
 	char in_buf[BUF_SIZE]; // input buffer for lib names 
 	// get the names of all the dynamic libs (.so  files) in the current dir 
 	dl = popen(command_str.c_str(), "r");
@@ -124,7 +124,7 @@ FileHandler::FileHandler(int argc, char * argv[]) {
 	case 3:
 		parsePairOfArguments(argv[1], argv[2]);
 	case 1:
-		initVectorsByCurrDirectory(argv[0]);
+		initVectorsByCurrDirectory(".");
 		break;
 	default:
 		m_invalidArguments = true;
