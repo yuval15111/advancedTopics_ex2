@@ -9,7 +9,7 @@ void MatchManager::createGameManagers()
 {
 	for (auto& algorithm : AlgorithmRegistrar::getInstance().getAlgorithms()) {
 		m_gameManagerVector.push_back(GameManager(m_name, m_maxSteps, m_rowsNum, m_colsNum,
-			m_board, m_playerLocation, m_endLocation, move(algorithm)));
+			m_board, m_playerLocation, m_endLocation, algorithm));
 	}
 }
 
