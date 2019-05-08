@@ -16,8 +16,12 @@ private:
 	unique_ptr<AbstractAlgorithm> 	m_algorithm;
 
 public:
-	GameManager(string name, int maxSteps, int rowsNum, int colsNum,
-		MazeBoard board, Coordinate playerLocation, Coordinate endLocation, unique_ptr<AbstractAlgorithm>&& algorithm); // TODO: set bookmark with {(0,0), 0}
+	GameManager(string name, int maxSteps, int rowsNum, int colsNum, MazeBoard board, Coordinate playerLocation,
+		Coordinate endLocation, unique_ptr<AbstractAlgorithm> algorithm) :
+		m_name(name), m_maxSteps(maxSteps), m_rowsNum(rowsNum),
+		m_colsNum(colsNum), m_board(board), m_playerLocation(playerLocation),
+		m_endLocation(endLocation), m_bookmarkMap(), m_algorithm(move(algorithm)) {	};
+	// TODO: set bookmark with {(0,0), 0}
 	~GameManager();
 
 	inline void				updateBookmark() { m_bookmarkMap[m_playerLocation] = m_bookmarkCount++; }
