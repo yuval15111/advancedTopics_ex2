@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
 			return EXIT_FAILURE;
 		}
 		m->createGameManagers();
-		m->activateGameManagers();
+		//m->activateGameManagers();
 		matchVector.push_back(m);
 	}
 	fh.pushLogsToOutputFiles(matchVector, fh.outputPathExists());

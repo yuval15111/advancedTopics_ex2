@@ -41,26 +41,26 @@ public:
 };
 
 class AlgorithmRegistrar {
+private:
+	static AlgorithmRegistrar instance;
 	vector<function<unique_ptr<AbstractAlgorithm>()>> algorithmFactoryVec;
 	inline void registerAlgorithm(std::function<unique_ptr<AbstractAlgorithm>()> algorithmFactory) {
 		instance.algorithmFactoryVec.push_back(algorithmFactory);
 	}
 public:
 	friend class AlgorithmRegistration;
-	vector<unique_ptr<AbstractAlgorithm>> getAlgorithms()const {
-		vector<unique_ptr<AbstractAlgorithm>> algorithms;
-		for (auto algorithmFactoryFunc : algorithmFactoryVec) {
-			algorithms.push_back(move(algorithmFactoryFunc()));
-		}
-		return algorithms;
-	}
+	//vector<unique_ptr<AbstractAlgorithm>> getAlgorithms()const {
+	//	vector<unique_ptr<AbstractAlgorithm>> algorithms;
+	//	for (auto algorithmFactoryFunc : algorithmFactoryVec) {
+	//		algorithms.push_back(move(algorithmFactoryFunc()));
+	//	}
+	//	return algorithms;
+	//}
 	vector<function<unique_ptr<AbstractAlgorithm>()>>& getAlgoFactoryVec() {
 		return algorithmFactoryVec;
 	}
 	static AlgorithmRegistrar& getInstance() {
 		return instance;
 	}
-private:
-	static AlgorithmRegistrar instance;
 };
 #endif
