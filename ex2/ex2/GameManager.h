@@ -32,6 +32,7 @@ public:
 	inline int				playerHitsBookmark() { return m_bookmarkMap.find(m_playerLocation) != m_bookmarkMap.end() ? m_bookmarkMap[m_playerLocation] : -1; }
 	inline int				getMaxSteps() { return m_maxSteps; }
 	vector<char>			play();
+	void					printBoard();
 };
 
 #endif

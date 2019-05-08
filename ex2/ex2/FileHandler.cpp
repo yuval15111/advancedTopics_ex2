@@ -25,16 +25,22 @@ void FileHandler::createMazeVector(const string & path)
 		char* ws = strpbrk(in_buf, " \t\n");
 		if (ws) *ws = '\0';
 		string filename(in_buf);
-		size_t index = filename.find("_308243351_");
-		if ((index != string::npos) && (endsWith(filename, ".maze"))) {
-			string mazeName = filename.substr(index, filename.length() - 5);
-			ifstream fin;
-			fin.open(filename.c_str());
-			if (!fin.is_open()) {
+		//size_t index = filename.find("_308243351_");
+
+		cout << "FH - after getting mazeVector. " << endl;
+		//if ((index != string::npos) && (endsWith(filename, ".maze"))) {
+			//string mazeName = filename.substr(index, filename.length() - 5);
+			ifstream *fin = new ifstream(filename.c_str());
+
+			//fin.open();
+
+
+			cout << "FH - after open the fin. " << filename << endl;
+			if (!(*fin).is_open()) {
 				exit(EXIT_FAILURE); // TODO: check how to exit
 			}
-			m_mazeVector.push_back(make_pair(mazeName, &fin));
-		}
+			m_mazeVector.push_back(fin);
+		//}
 	}
 	pclose(dl);
 }
@@ -73,10 +79,10 @@ void FileHandler::createAlgorithmVector(const string& path) {
 
 void FileHandler::createOutputVector()
 {
-	vector<MazePair>::iterator mazeIt;
+	vector<ifstream*>::iterator mazeIt;
 	for (mazeIt = m_mazeVector.begin(); mazeIt != m_mazeVector.end(); ++mazeIt) {
 		for (string & algoName : m_algorithmNameVector) {
-			m_outputVector.push_back(ofstream(m_outputPath + "/" + mazeIt->first + "_" + algoName + ".output"));
+			m_outputVector.push_back(ofstream(m_outputPath + "/" + /*mazeIt->first*/ + "_" + algoName + ".output"));
 		}
 	}
 }
@@ -153,25 +159,39 @@ void FileHandler::checkErrors(void*(titleFunc)) {
 MatchManager * FileHandler::parseInput(ifstream * fin) {
 	string line;
 
+	cout << "FH - starting to parse Input. " << endl;
 	string name = getName(fin, line);															// Collects maze parameters
+
+	cout << "FH - after getting the name. " << endl;
 	int maxSteps = getIntValue(fin, MAXSTEPS, ErrorType::MaxStepsError, line);
 	int rowsNum = getIntValue(fin, ROWS, ErrorType::RowsError, line);
 	int colsNum = getIntValue(fin, COLS, ErrorType::ColsError, line);
 	checkErrors((void*)printHeaderErrorTitle);
+
+	cout << "FH - before checking no_parsing_error. " << endl;
 	if (m_errors.no_parsing_Errors) {														// No errors, lines 2-4 are valid.
+
+		cout << "FH - after checking no_parsing_error. " << endl;
 		Coordinate playerLocation, endLocation;
 		MazeBoard board = getBoard(fin, rowsNum, colsNum, playerLocation, endLocation, line);
+
+		cout << "FH - after getting board. " << endl;
 		checkErrors((void*)printMazeErrorTitle);
 		if (m_errors.no_parsing_Errors)							// No errors, maze file is valid - creates a Manager object
 			return new MatchManager(name, maxSteps, rowsNum, colsNum,
 				board, playerLocation, endLocation, m_algorithmNameVector);
 	}
+
+	cout << "FH - return nullptr in parseInput function. " << endl;
 	return nullptr;
 }
 
 /* This function retrieves the name of the maze. */
 string FileHandler::getName(ifstream * fin, string & line) {
+	cout << "FH - before the if in get name." << endl;
 	if (getline(*fin, line)) {
+
+		cout << "FH - inside the if: " << line << endl;
 		return line;
 	}
 	return nullptr;

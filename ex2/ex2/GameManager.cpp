@@ -10,6 +10,7 @@ vector<char> GameManager::play() {
 	vector<char> moveList;
 	int seq;
 	for (int i = 1; i <= m_maxSteps; ++i) {
+		printBoard();
 		Move m = m_algorithm->move();							// PLAYER: THIS IS MY MOVE!
 		moveList.push_back(getMoveChar(m));
 		if (m == Move::BOOKMARK)	updateBookmark();
@@ -32,6 +33,24 @@ vector<char> GameManager::play() {
 	moveList.push_back('X');
 	printLostMessage(m_maxSteps);									// MANAGER: YOU SHOULD TRY HARDER NEXT TIME. CYA!
 	return moveList;
+}
+
+void GameManager::printBoard()
+{
+	for (int i = 0; i < m_rowsNum; i++) {
+		for (int j = 0; j < m_colsNum; j++) {
+			if (m_playerLocation.first != i || m_playerLocation.second != j) {
+				cout << m_board[i][j];
+			}
+			else {
+				cout << "@";
+			}
+		}
+
+		cout << endl;
+	}
+	cout << endl;
+	cout << endl;
 }
 
 void GameManager::execute(Move a, const bool undo)
