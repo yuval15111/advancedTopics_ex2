@@ -60,7 +60,7 @@ public:
 		for (auto algorithmFactoryFunc : algorithmFactoryVec) {
 			algorithms.push_back(algorithmFactoryFunc());
 		}
-		return algorithms;
+		return move(algorithms);
 	}
 	//const vector<string>& getAlgorithmNames()const {
 	//	return algorithmNames;
