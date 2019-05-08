@@ -4,7 +4,6 @@
 #include "MainAux.h"
 
 class GameManager {
-public:
 
 private:
 	string 							m_name;

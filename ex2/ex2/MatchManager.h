@@ -28,7 +28,6 @@ private:
 	//vector<unique_ptr<AbstractAlgorithm>> v;
 
 public:
-	MatchManager() { };
 	MatchManager(string name, int maxSteps, int rowsNum, int colsNum,
 		MazeBoard board, Coordinate playerLocation, Coordinate endLocation, vector<string> & algoNameVec) :
 		m_name(name), m_maxSteps(maxSteps), m_rowsNum(rowsNum),
@@ -69,7 +68,7 @@ public:
 	/*size_t size()const {
 		return algorithmFactoryVec.size();
 	}*/
-	vector<function<unique_ptr<AbstractAlgorithm>()>> getAlgoFactoryVec() {
+	vector<function<unique_ptr<AbstractAlgorithm>()>>& getAlgoFactoryVec() {
 		return algorithmFactoryVec;
 	}
 	static AlgorithmRegistrar& getInstance() {
