@@ -58,7 +58,7 @@ public:
 	vector<unique_ptr<AbstractAlgorithm>> getAlgorithms()const {
 		vector<unique_ptr<AbstractAlgorithm>> algorithms;
 		for (auto algorithmFactoryFunc : algorithmFactoryVec) {
-			algorithms.push_back(algorithmFactoryFunc());
+			algorithms.push_back(move(algorithmFactoryFunc()));
 		}
 		return algorithms;
 	}
