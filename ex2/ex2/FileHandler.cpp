@@ -2,24 +2,26 @@
 #include <algorithm>
 FileHandler::~FileHandler()
 {
+	AlgorithmRegistrar::getInstance().clearVector();
+
 	for (MatchManager * mm : m_matchVector)
 		if (mm != nullptr) delete mm;
 
-	for (vector<void *>::iterator dl_itr = dlVector.begin(); dl_itr != dlVector.end(); dl_itr++)
-		if ((*dl_itr) != NULL) dlclose(*dl_itr);
+	for (void * dl : dlVector)
+		if (dl != NULL)	dlclose(dl);
 }
 
 
-void FileHandler::createMatchVector()
+void FileHandler::getMatches()
 {
 	FILE* dl;  // handle to read directory 
 	string command_str = "ls " + m_mazePath + "/*.maze";
 	char in_buf[BUF_SIZE];
-	// get the names of all the .maze  files in the current dir 
+	// get the names of all the .maze  files in the current directory
 	dl = popen(command_str.c_str(), "r");
 	if (!dl) {
 		cout << "Error: error in popen command. " << strerror(errno) << endl;
-		exit(EXIT_FAILURE); //TODO: check how to exit
+		return;
 	}
 	
 	while (fgets(in_buf, BUF_SIZE, dl)) {
@@ -44,7 +46,7 @@ void FileHandler::createMatchVector()
 	pclose(dl);
 }
 
-void FileHandler::createAlgorithmVector() {
+void FileHandler::getAlgorithms() {
 	FILE* dl;  // handle to read directory 
 	string command_str = "ls " + m_algorithmPath + "/*.so";
 	char in_buf[BUF_SIZE]; // input buffer for lib names 
@@ -55,6 +57,8 @@ void FileHandler::createAlgorithmVector() {
 		exit(EXIT_FAILURE); //TODO: check if exitting is legal
 	}
 	void* dlib;
+
+	int c = 0;
 	while (fgets(in_buf, BUF_SIZE, dl)) {
 		// trim off the whitespace 
 		char* ws = strpbrk(in_buf, " \t\n");
@@ -165,13 +169,10 @@ void FileHandler::createOutput()
 
 }
 
-void FileHandler::initVectors() {
-	if (m_invalidArguments) {
-		printWrongArgumentsFormatError();
-		return;
-	}
-	createAlgorithmVector();
-	createMatchVector();
+void FileHandler::init() {
+	if (m_invalidArguments) return;
+	getAlgorithms();
+	getMatches();
 	createOutput();
 }
 
@@ -212,12 +213,13 @@ FileHandler::FileHandler(int argc, char * argv[]) {
 	case 3:
 		parsePairOfArguments(argv[1], argv[2]);
 	case 1:
-		initVectors();
+		init();
 		break;
 	default:
 		m_invalidArguments = true;
 		break;
 	}
+	if (m_invalidArguments) printWrongArgumentsFormatError();
 }
 
 /*	This function checks if there are errors. If so: updates m_errors.noErrors field to false and prints the errors */

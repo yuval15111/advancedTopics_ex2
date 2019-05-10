@@ -14,10 +14,4 @@ void MatchManager::createGameManagers()
 	}
 }
 
-void MatchManager::activateGameManagers()
-{
-	for (unsigned int i = 0; i < m_gameManagerVector.size(); i++) {
-		m_moveListVector.push_back(m_gameManagerVector[i].play());
-	}
-}
 AlgorithmRegistrar AlgorithmRegistrar::instance;

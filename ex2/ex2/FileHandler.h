@@ -24,9 +24,9 @@ private:
 	string						m_outputPath = ".";
 	vector<void *>				dlVector;
 	
-	void						initVectors();
-	void						createMatchVector();
-	void						createAlgorithmVector();
+	void						init();
+	void						getMatches();
+	void						getAlgorithms();
 	void						createOutput();
 	void						parsePairOfArguments(char * type, char * path);
 

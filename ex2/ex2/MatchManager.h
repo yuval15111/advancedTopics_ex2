@@ -27,7 +27,6 @@ public:
 		m_colsNum(colsNum), m_board(board), m_playerLocation(playerLocation),
 		m_endLocation(endLocation), m_bookmarkVector(playerLocation), m_algorithmNameVector(algoNameVec) {};
 	void createGameManagers();
-	void activateGameManagers();
 	inline string & getName() { return m_name; }
 	inline int algorithmsCount() { return m_algorithmNameVector.size(); }
 	inline vector<vector<char>> getMoveListVector() { return m_moveListVector; }
@@ -49,5 +48,6 @@ public:
 	static AlgorithmRegistrar& getInstance() {
 		return instance;
 	}
+	inline void clearVector() { algorithmFactoryVec.clear(); }
 };
 #endif

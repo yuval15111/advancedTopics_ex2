@@ -1,10 +1,5 @@
 #include "GameManager.h"
 
-GameManager::~GameManager()
-{
-	//delete m_player;
-}
-
 /* main function of manager, where the game flow is */
 vector<char> GameManager::play() {
 	vector<char> moveList;
@@ -30,7 +25,6 @@ vector<char> GameManager::play() {
 			}
 		}
 	}
-	cout << "lost in game in " << moveList.size() -1 << "moves." << endl;
 	moveList.push_back('X');
 	printLostMessage(m_maxSteps);									// MANAGER: YOU SHOULD TRY HARDER NEXT TIME. CYA!
 	return moveList;
