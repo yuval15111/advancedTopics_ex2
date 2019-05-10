@@ -81,7 +81,7 @@ void FileHandler::createOutput()
 	unsigned int column_length = 50, num_of_mazes = m_matchVector.size();
 
 	// seperation row
-	for (unsigned int i = 0; i < (column_length + 1) * num_of_mazes; i++) {
+	for (unsigned int i = 0; i < (column_length + 1) * (num_of_mazes + 1); i++) {
 		cout << "-";
 	}
 	cout << endl;
@@ -108,7 +108,7 @@ void FileHandler::createOutput()
 	for (unsigned int i = 0; i < m_algorithmNameVector.size(); i++) {
 
 		// seperation row
-		for (unsigned int j = 0; j < (column_length + 1) * num_of_mazes; j++) {
+		for (unsigned int j = 0; j < (column_length + 1) * (num_of_mazes + 1); j++) {
 			cout << "-";
 		}
 		cout << endl;
@@ -150,7 +150,7 @@ void FileHandler::createOutput()
 	}
 	
 	// seperation row
-	for (unsigned int i = 0; i < (column_length + 1) * num_of_mazes; i++) {
+	for (unsigned int i = 0; i < (column_length + 1) * (num_of_mazes + 1); i++) {
 		cout << "-";
 	}
 	cout << endl;
