@@ -87,14 +87,15 @@ void FileHandler::createOutput()
 	cout << "|" << endl;*/
 	for (unsigned int i = 0; i < m_algorithmNameVector.size(); i++) {
 		string & algoName = m_algorithmNameVector[i];
-		for (unsigned int j = 0; j < m_matchVector.size(); j++) {
-			string & mazeName = m_matchVector[j]->getName();
-			ofstream fout = ofstream(m_outputPath + "/" + mazeName + "_" + algoName + ".output");
-			vector<vector<char>> vec = m_matchVector[j]->getMoveListVector();
-			if (outputPathExists) {
-				for (char c : vec[i]) fout << c;
+		//cout << 
+			for (unsigned int j = 0; j < m_matchVector.size(); j++) {
+				string & mazeName = m_matchVector[j]->getName();
+				ofstream fout = ofstream(m_outputPath + "/" + mazeName + "_" + algoName + ".output");
+				vector<vector<char>> vec = m_matchVector[j]->getMoveListVector();
+				if (m_outputPathExists) {
+					for (char c : vec[i]) fout << c;
+				}
 			}
-
 	}
 }
 
