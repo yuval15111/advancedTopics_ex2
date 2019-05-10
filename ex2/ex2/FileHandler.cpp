@@ -6,7 +6,7 @@ FileHandler::~FileHandler()
 		if (mm != nullptr) delete mm;
 
 	for (vector<void *>::iterator dl_itr = dlVector.begin(); dl_itr != dlVector.end(); dl_itr++)
-		dlclose(*dl_itr);
+		if ((*dl_itr) != NULL) dlclose(*dl_itr);
 }
 
 
@@ -68,7 +68,7 @@ void FileHandler::createAlgorithmVector() {
 				printBadAlgorithmWarning(algorithmName);
 				continue;
 			}
-			dlVector.push_back(dlib); // to be closed
+			dlVector.emplace_back(dlib); // to be closed
 			m_algorithmNameVector.push_back(algorithmName);
 			cout << "FH - created algorithm " << algorithmName << endl;
 		}
