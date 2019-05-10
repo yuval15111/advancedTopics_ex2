@@ -19,7 +19,7 @@ private:
 	vector<string>				m_algorithmNameVector;
 	//vector<ofstream>			m_outputVector;
 	vector<vector<char>>		m_outputVector;
-	string						m_outputPath;
+	string						m_outputPath = ".";
 	vector<void *>				dlVector;
 	
 	void						initVectorsByCurrDirectory(const string& path);
