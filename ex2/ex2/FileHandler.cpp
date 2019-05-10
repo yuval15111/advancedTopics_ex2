@@ -31,8 +31,8 @@ void FileHandler::createMatchVector()
 		}
 		MatchManager * mm = parseInput(fin);
 		if (mm == nullptr) {
-			// TODO: deallocate all memory allocations
-			return;
+			printBadMazeWarning(filename);
+			continue;
 		}
 		mm->createGameManagers();
 		m_matchVector.push_back(mm);
@@ -60,16 +60,12 @@ void FileHandler::createAlgorithmVector() {
 		size_t index = filename.find("_308243351_");
 		if ((index != string::npos) && (endsWith(filename, ".so"))) {
 			string algorithmName = filename.substr(index, 12);
-
-			
-
 			dlib = dlopen(filename.c_str(), RTLD_LAZY);
 			if (dlib == NULL) {
-				cerr << dlerror() << endl;
-				cout << "FH - error in algorithm:  " << algorithmName << endl;
-				exit(EXIT_FAILURE);
+				printBadAlgorithmWarning(algorithmName);
+				continue;
 			}
-			dlVector.push_back(dlib);
+			dlVector.push_back(dlib); // to be closed
 			m_algorithmNameVector.push_back(algorithmName);
 			cout << "FH - created algorithm " << algorithmName << endl;
 		}

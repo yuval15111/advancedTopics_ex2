@@ -30,6 +30,16 @@ void printWrongArgumentsFormatError()
 	cout << "Wrong format arguments" << endl;
 }
 
+void printBadAlgorithmWarning(string algoName)
+{
+	cout << "Warning: " << algoName << " is invalid." << endl;
+}
+
+void printBadMazeWarning(string mazeName)
+{
+	cout << "Warning: " << mazeName << " is invalid." << endl;
+}
+
 void printHeaderErrorTitle()
 {
 	cout << "Bad maze file header:" << endl;
