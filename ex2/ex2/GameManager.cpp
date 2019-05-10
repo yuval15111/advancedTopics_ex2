@@ -10,7 +10,7 @@ vector<char> GameManager::play() {
 	vector<char> moveList;
 	int seq;
 	for (int i = 1; i <= m_maxSteps; ++i) {
-		printBoard();
+		//printBoard();
 		Move m = m_algorithm->move();							// PLAYER: THIS IS MY MOVE!
 		moveList.push_back(getMoveChar(m));
 		if (m == Move::BOOKMARK)	updateBookmark();
