@@ -15,7 +15,8 @@ private:
 	bool						m_outputPathExists = false;
 	bool						m_invalidArguments = false;
 
-	vector<ifstream*>			m_mazeVector;
+	//vector<ifstream*>			m_mazeVector;
+	vector<MatchManager *>		m_matchVector;
 	//vector<AlgorithmPair>		m_algorithmVector;
 	vector<string>				m_algorithmNameVector;
 	vector<ofstream>			m_outputVector;
@@ -23,7 +24,7 @@ private:
 	vector<void *>				dlVector;
 	
 	void						initVectorsByCurrDirectory(const string& path);
-	void						createMazeVector(const string& path);
+	void						createMatchVector(const string& path);
 	void						createAlgorithmVector(const string& path);
 	void						createOutputVector();
 	void						parsePairOfArguments(char * type, char * path);
@@ -45,7 +46,7 @@ public:
 	MatchManager *				parseInput(ifstream * fin);
 	void						pushActionsToOutputFile(ofstream & fout, vector<char> actions);
 	inline bool					invalidArgs() { return m_invalidArguments; }
-	inline vector<ifstream*>&	getMazeVector() { return m_mazeVector; }
+	inline vector<ifstream*>&	getMazeVector() { return m_matchVector; }
 	inline bool					outputPathExists() { return m_outputPathExists; }
 	void						pushLogsToOutputFiles(vector<MatchManager *> matchVector, bool outputPathExists);
 };

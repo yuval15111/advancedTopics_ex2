@@ -35,6 +35,7 @@ public:
 		m_endLocation(endLocation), m_bookmarkVector(playerLocation), m_algorithmNameVector(algoNameVec) {};
 	void createGameManagers();
 	void activateGameManagers();
+	inline string & getName() { return m_name; }
 	//void registerAlgorithm(function<unique_ptr<AbstractAlgorithm>()> factoryMethod);
 	inline int algorithmsCount() { return m_algorithmNameVector.size(); }
 	//static MatchManager& getMatchManager();

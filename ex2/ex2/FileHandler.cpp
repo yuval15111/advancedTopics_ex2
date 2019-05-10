@@ -8,7 +8,7 @@ FileHandler::~FileHandler()
 }
 
 
-void FileHandler::createMazeVector(const string & path)
+void FileHandler::createMatchVector(const string & path)
 {
 	FILE* dl;  // handle to read directory 
 	string command_str = "ls " + path + "/*.maze";
@@ -39,7 +39,14 @@ void FileHandler::createMazeVector(const string & path)
 			if (!(*fin).is_open()) {
 				exit(EXIT_FAILURE); // TODO: check how to exit
 			}
-			m_mazeVector.push_back(fin);
+			MatchManager * mm = parseInput(fin);
+			if (mm == nullptr) {
+				// TODO: deallocate all memory allocations
+				return;
+			}
+			mm->createGameManagers();
+			m_matchVector.push_back(mm);
+			//m_mazeVector.push_back(fin);
 		//}
 	}
 	pclose(dl);
@@ -79,16 +86,18 @@ void FileHandler::createAlgorithmVector(const string& path) {
 
 void FileHandler::createOutputVector()
 {
-	vector<ifstream*>::iterator mazeIt;
-	for (mazeIt = m_mazeVector.begin(); mazeIt != m_mazeVector.end(); ++mazeIt) {
-		for (string & algoName : m_algorithmNameVector) {
-			m_outputVector.push_back(ofstream(m_outputPath + "/" + /*mazeIt->first*/ + "_" + algoName + ".output"));
+	
+	for (unsigned int i = 0; i < m_matchVector.size(); i++) {
+		string & mazeName = m_matchVector[i]->getName();
+		for (unsigned int j = 0; j < m_algorithmNameVector.size(); j++) {
+			string & algoName = m_algorithmNameVector[j];
+			m_outputVector.push_back(ofstream(m_outputPath + "/" + mazeName + "_" + algoName + ".output"));
 		}
 	}
 }
 
 void FileHandler::initVectorsByCurrDirectory(const string & path) {
-	if (!m_mazePathExists) createMazeVector(path);
+	if (!m_mazePathExists) createMatchVector(path);
 	if (!m_algorithmPathExists) createAlgorithmVector(path);
 	if (m_outputPathExists) createOutputVector();
 }
@@ -98,7 +107,7 @@ void FileHandler::parsePairOfArguments(char * type, char * path) {
 	if (strcmp(type, "-maze_path") == 0) { // .maze folder path
 		if (!m_mazePathExists) {
 			m_mazePathExists = true;
-			createMazeVector(path);
+			createMatchVector(path);
 		}
 		else m_invalidArguments = true;
 	}

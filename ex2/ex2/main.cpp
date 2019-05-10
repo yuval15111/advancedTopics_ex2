@@ -12,22 +12,22 @@ int main(int argc, char* argv[]) {
 
 	cout << "Maze vector size:" << mazeVector.size() << endl;
 	cout << "Main - after getting mazeVector. " << endl;
-	for (unsigned int i = 0; i < mazeVector.size(); i++) {
+	//for (unsigned int i = 0; i < mazeVector.size(); i++) {
 
-		cout << "Main - before parseInput. " << endl;
-		MatchManager * m = fh.parseInput(mazeVector[i]);
-		cout << "Main - after parseInput. " << endl;
-		if (m == nullptr) {
-			// TODO: deallocate all memory allocations
-			return EXIT_FAILURE;
-		}
+	//	cout << "Main - before parseInput. " << endl;
+	//	MatchManager * m = fh.parseInput(mazeVector[i]);
+	//	cout << "Main - after parseInput. " << endl;
+	//	if (m == nullptr) {
+	//		// TODO: deallocate all memory allocations
+	//		return EXIT_FAILURE;
+	//	}
 
-		cout << "Main - before create game managers. " << endl;
-		m->createGameManagers();
-		cout << "Main - after create game managers. " << endl;
-		//m->activateGameManagers();
-		matchVector.push_back(m);
-	}
+	//	cout << "Main - before create game managers. " << endl;
+	//	m->createGameManagers();
+	//	cout << "Main - after create game managers. " << endl;
+	//	//m->activateGameManagers();
+	//	matchVector.push_back(m);
+	//}
 	fh.pushLogsToOutputFiles(matchVector, fh.outputPathExists());
 	return 0;
 }
