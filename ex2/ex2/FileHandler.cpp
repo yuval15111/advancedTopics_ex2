@@ -78,7 +78,7 @@ void FileHandler::createAlgorithmVector(const string& path) {
 
 void FileHandler::createOutput()
 {
-	unsigned int column_length = 15, num_of_mazes = m_matchVector.size();
+	unsigned int column_length = 50, num_of_mazes = m_matchVector.size();
 
 	// seperation row
 	for (unsigned int i = 0; i < (column_length + 1) * num_of_mazes; i++) {
@@ -86,7 +86,7 @@ void FileHandler::createOutput()
 	}
 	cout << endl;
 
-	// second line - titles
+	// -------------titles------------
 
 	// first column - algorithms title
 	cout << "|";
@@ -120,13 +120,12 @@ void FileHandler::createOutput()
 			cout << " ";
 		}
 
-
 		// algorithm information for each maze
 		for (unsigned int j = 0; j < m_matchVector.size(); j++) {
 			vector<vector<char>> vec = m_matchVector[j]->getMoveListVector();
 			cout << "|";
 			if (vec[i][vec[i].size() - 1] == '!') {
-				string str = "" + (vec[i].size() - 1);
+				string str = to_string(vec[i].size() - 1);
 				for (unsigned int k = 0; k < column_length - str.length(); k++) {
 					cout << " ";
 				}
@@ -150,7 +149,6 @@ void FileHandler::createOutput()
 		cout << "|" << endl;
 	}
 	
-
 	// seperation row
 	for (unsigned int i = 0; i < (column_length + 1) * num_of_mazes; i++) {
 		cout << "-";
