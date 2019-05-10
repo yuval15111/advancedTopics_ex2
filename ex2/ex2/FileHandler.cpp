@@ -8,10 +8,10 @@ FileHandler::~FileHandler()
 }
 
 
-void FileHandler::createMatchVector(const string & path)
+void FileHandler::createMatchVector()
 {
 	FILE* dl;  // handle to read directory 
-	string command_str = "ls " + path + "/*.maze";
+	string command_str = "ls " + m_mazePath + "/*.maze";
 	char in_buf[BUF_SIZE];
 	// get the names of all the .maze  files in the current dir 
 	dl = popen(command_str.c_str(), "r");
@@ -41,9 +41,9 @@ void FileHandler::createMatchVector(const string & path)
 	pclose(dl);
 }
 
-void FileHandler::createAlgorithmVector(const string& path) {
+void FileHandler::createAlgorithmVector() {
 	FILE* dl;  // handle to read directory 
-	string command_str = "ls " + path + "/*.so";
+	string command_str = "ls " + m_algorithmPath + "/*.so";
 	char in_buf[BUF_SIZE]; // input buffer for lib names 
 	// get the names of all the dynamic libs (.so  files) in the current dir 
 	dl = popen(command_str.c_str(), "r");
@@ -160,9 +160,13 @@ void FileHandler::createOutput()
 
 }
 
-void FileHandler::initVectorsByCurrDirectory(const string & path) {
-	if (!m_algorithmPathExists) createAlgorithmVector(path);
-	if (!m_mazePathExists) createMatchVector(path);
+void FileHandler::initVectors() {
+	if (m_invalidArguments) {
+		printWrongArgumentsFormatError();
+		return;
+	}
+	createAlgorithmVector();
+	createMatchVector();
 	createOutput();
 }
 
@@ -171,14 +175,14 @@ void FileHandler::parsePairOfArguments(char * type, char * path) {
 	if (strcmp(type, "-maze_path") == 0) { // .maze folder path
 		if (!m_mazePathExists) {
 			m_mazePathExists = true;
-			createMatchVector(path);
+			m_mazePath = path;
 		}
 		else m_invalidArguments = true;
 	}
 	else if (strcmp(type, "-algorithm_path") == 0) { // .so folder path
 		if (!m_algorithmPathExists) {
 			m_algorithmPathExists = true;
-			createAlgorithmVector(path);
+			m_algorithmPath = path;
 		}
 		else m_invalidArguments = true;
 	}
@@ -203,7 +207,7 @@ FileHandler::FileHandler(int argc, char * argv[]) {
 	case 3:
 		parsePairOfArguments(argv[1], argv[2]);
 	case 1:
-		initVectorsByCurrDirectory(".");
+		initVectors();
 		break;
 	default:
 		m_invalidArguments = true;

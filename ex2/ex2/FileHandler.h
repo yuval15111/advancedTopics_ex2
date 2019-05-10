@@ -19,12 +19,14 @@ private:
 	vector<string>				m_algorithmNameVector;
 	//vector<ofstream>			m_outputVector;
 	vector<vector<char>>		m_outputVector;
+	string						m_algorithmPath = ".";
+	string						m_mazePath = ".";
 	string						m_outputPath = ".";
 	vector<void *>				dlVector;
 	
-	void						initVectorsByCurrDirectory(const string& path);
-	void						createMatchVector(const string& path);
-	void						createAlgorithmVector(const string& path);
+	void						initVectors();
+	void						createMatchVector();
+	void						createAlgorithmVector();
 	void						createOutput();
 	void						parsePairOfArguments(char * type, char * path);
 
