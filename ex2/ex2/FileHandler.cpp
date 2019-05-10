@@ -90,12 +90,13 @@ void FileHandler::createOutput()
 		cout << "|" << algoName;
 		for (unsigned int j = 0; j < m_matchVector.size(); j++) {
 			string & mazeName = m_matchVector[j]->getName();
-			ofstream fout = ofstream();
-			fout.open(m_outputPath + "/" + mazeName + "_" + algoName + ".output");
+			
 
 			vector<vector<char>> vec = m_matchVector[j]->getMoveListVector();
-			cout << "|       " << vec.size();
+			cout << "|       " << vec[i].size() - 1;
 			if (m_outputPathExists) {
+				ofstream fout = ofstream();
+				fout.open(m_outputPath + "/" + mazeName + "_" + algoName + ".output");
 				for (char c : vec[i]) fout << c;
 			}
 		}
