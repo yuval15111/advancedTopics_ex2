@@ -2,9 +2,11 @@
 #include <algorithm>
 FileHandler::~FileHandler()
 {
-	//if (m_manager != nullptr) delete m_manager;
-	//m_mazeFile.close();
-	//m_outputFile.close();
+	for (MatchManager * mm : m_matchVector)
+		if (mm != nullptr) delete mm;
+
+	for (vector<void *>::iterator dl_itr = dlVector.begin(); dl_itr != dlVector.end(); dl_itr++)
+		dlclose(*dl_itr);
 }
 
 
@@ -30,6 +32,7 @@ void FileHandler::createMatchVector()
 			exit(EXIT_FAILURE); // TODO: check how to exit
 		}
 		MatchManager * mm = parseInput(fin);
+		delete fin;
 		if (mm == nullptr) {
 			printBadMazeWarning(filename);
 			continue;
@@ -141,7 +144,13 @@ void FileHandler::createOutput()
 			if (m_outputPathExists) {
 				string & mazeName = m_matchVector[j]->getName();
 				ofstream fout = ofstream();
-				fout.open(m_outputPath + "/" + mazeName + "_" + algoName + ".output");
+				string path = m_outputPath + "/" + mazeName + "_" + algoName + ".output";
+				int count = 1;
+				while (fileExists(path.c_str())) {
+					path = m_outputPath + "/" + mazeName + "_" + algoName + "(" + to_string(count) + ").output";
+					count++;
+				}
+				fout.open(path);
 				for (char c : vec[i]) fout << c << endl;
 			}
 		}
@@ -230,6 +239,7 @@ void FileHandler::checkErrors(void*(titleFunc)) {
 
 /* This function parses the input file and creates the manager object. */
 MatchManager * FileHandler::parseInput(ifstream * fin) {
+	m_errors.no_parsing_Errors = true;
 	string line;
 
 	cout << "FH - starting to parse Input. " << endl;
