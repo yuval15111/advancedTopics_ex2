@@ -46,7 +46,7 @@ public:
 	MatchManager *				parseInput(ifstream * fin);
 	void						pushActionsToOutputFile(ofstream & fout, vector<char> actions);
 	inline bool					invalidArgs() { return m_invalidArguments; }
-	inline vector<ifstream*>&	getMazeVector() { return m_matchVector; }
+	//inline vector<ifstream*>&	getMazeVector() { return m_matchVector; }
 	inline bool					outputPathExists() { return m_outputPathExists; }
 	void						pushLogsToOutputFiles(vector<MatchManager *> matchVector, bool outputPathExists);
 };
