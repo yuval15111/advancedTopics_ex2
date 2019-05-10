@@ -71,6 +71,9 @@ void FileHandler::createAlgorithmVector(const string& path) {
 		size_t index = filename.find("_308243351_");
 		if ((index != string::npos) && (endsWith(filename, ".so"))) {
 			string algorithmName = filename.substr(index, filename.length() - 3);
+
+			cout << "FH - checking for so:  "<< algorithmName << endl;
+
 			dlib = dlopen(filename.c_str(), RTLD_LAZY);
 			if (dlib == NULL) {
 				cerr << dlerror() << endl;
@@ -97,8 +100,8 @@ void FileHandler::createOutputVector()
 }
 
 void FileHandler::initVectorsByCurrDirectory(const string & path) {
-	if (!m_mazePathExists) createMatchVector(path);
 	if (!m_algorithmPathExists) createAlgorithmVector(path);
+	if (!m_mazePathExists) createMatchVector(path);
 	if (m_outputPathExists) createOutputVector();
 }
 
