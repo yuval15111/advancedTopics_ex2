@@ -60,7 +60,7 @@ void FileHandler::createAlgorithmVector(const string& path) {
 		string filename(in_buf);
 		size_t index = filename.find("_308243351_");
 		if ((index != string::npos) && (endsWith(filename, ".so"))) {
-			string algorithmName = filename.substr(index, filename.length() - 3);
+			string algorithmName = filename.substr(index, filename.length() - 5);
 
 			cout << "FH - checking for so:  "<< algorithmName << endl;
 
@@ -78,31 +78,85 @@ void FileHandler::createAlgorithmVector(const string& path) {
 
 void FileHandler::createOutput()
 {
-	cout << "---------------------------------------------------" << endl;
-	cout << "|             ";
-	for (unsigned int j = 0; j < m_matchVector.size(); j++) {
+	unsigned int column_length = 15, num_of_mazes = m_matchVector.size();
+
+	// seperation row
+	for (unsigned int i = 0; i < (column_length + 1) * num_of_mazes; i++) {
+		cout << "-";
+	}
+	cout << endl;
+
+	// second line - titles
+
+	// first column - algorithms title
+	cout << "|";
+	for (unsigned int i = 0; i < column_length; i++) {
+		cout << " ";
+	}
+	
+	// rest of the columns - mazes titles
+	for (unsigned int j = 0; j < num_of_mazes; j++) {
 		string & mazeName = m_matchVector[j]->getName();
-		cout << "|" << mazeName << "        ";
+		cout << "|" << mazeName;
+		for (unsigned int i = 0; i < column_length - mazeName.length(); i++) {
+			cout << " ";
+		}
 	}
 	cout << "|" << endl;
+
+	// information rows
 	for (unsigned int i = 0; i < m_algorithmNameVector.size(); i++) {
+
+		// seperation row
+		for (unsigned int j = 0; j < (column_length + 1) * num_of_mazes; j++) {
+			cout << "-";
+		}
+		cout << endl;
+
+		// algorithm name
 		string & algoName = m_algorithmNameVector[i];
 		cout << "|" << algoName;
-		for (unsigned int j = 0; j < m_matchVector.size(); j++) {
-			string & mazeName = m_matchVector[j]->getName();
-			
+		for (unsigned int j = 0; j < column_length - algoName.length(); j++) {
+			cout << " ";
+		}
 
+
+		// algorithm information for each maze
+		for (unsigned int j = 0; j < m_matchVector.size(); j++) {
 			vector<vector<char>> vec = m_matchVector[j]->getMoveListVector();
-			cout << "|       " << vec[i].size() - 1;
+			cout << "|";
+			if (vec[i][vec[i].size() - 1] == '!') {
+				string str = "" + (vec[i].size() - 1);
+				for (unsigned int k = 0; k < column_length - str.length(); k++) {
+					cout << " ";
+				}
+				cout << str;
+			}
+			else {
+				for (unsigned int k = 0; k < column_length - 2; k++) {
+					cout << " ";
+				}
+				cout << "-1";
+			}
+			
+			// output file handling
 			if (m_outputPathExists) {
+				string & mazeName = m_matchVector[j]->getName();
 				ofstream fout = ofstream();
 				fout.open(m_outputPath + "/" + mazeName + "_" + algoName + ".output");
-				for (char c : vec[i]) fout << c;
+				for (char c : vec[i]) fout << c << endl;
 			}
 		}
 		cout << "|" << endl;
 	}
-	cout << "---------------------------------------------------" << endl;
+	
+
+	// seperation row
+	for (unsigned int i = 0; i < (column_length + 1) * num_of_mazes; i++) {
+		cout << "-";
+	}
+	cout << endl;
+
 }
 
 void FileHandler::initVectorsByCurrDirectory(const string & path) {
