@@ -241,24 +241,14 @@ void FileHandler::checkErrors(void*(titleFunc)) {
 MatchManager * FileHandler::parseInput(ifstream * fin) {
 	m_errors.no_parsing_Errors = true;
 	string line;
-
-	cout << "FH - starting to parse Input. " << endl;
 	string name = getName(fin, line);															// Collects maze parameters
-
-	cout << "FH - after getting the name. " << endl;
 	int maxSteps = getIntValue(fin, MAXSTEPS, ErrorType::MaxStepsError, line);
 	int rowsNum = getIntValue(fin, ROWS, ErrorType::RowsError, line);
 	int colsNum = getIntValue(fin, COLS, ErrorType::ColsError, line);
 	checkErrors((void*)printHeaderErrorTitle);
-
-	cout << "FH - before checking no_parsing_error. " << endl;
 	if (m_errors.no_parsing_Errors) {														// No errors, lines 2-4 are valid.
-
-		cout << "FH - after checking no_parsing_error. " << endl;
 		Coordinate playerLocation, endLocation;
 		MazeBoard board = getBoard(fin, rowsNum, colsNum, playerLocation, endLocation, line);
-
-		cout << "FH - after getting board. " << endl;
 		checkErrors((void*)printMazeErrorTitle);
 		if (m_errors.no_parsing_Errors)							// No errors, maze file is valid - creates a Manager object
 			return new MatchManager(name, maxSteps, rowsNum, colsNum,
@@ -271,10 +261,7 @@ MatchManager * FileHandler::parseInput(ifstream * fin) {
 
 /* This function retrieves the name of the maze. */
 string FileHandler::getName(ifstream * fin, string & line) {
-	cout << "FH - before the if in get name." << endl;
 	if (getline(*fin, line)) {
-
-		cout << "FH - inside the if: " << line << endl;
 		return line;
 	}
 	return nullptr;
@@ -360,16 +347,4 @@ void FileHandler::handleInvalidChar(const char c, const int i, const int j) {
 void FileHandler::pushActionsToOutputFile(ofstream & fout, vector<char> actions) {
 	for (const char & c : actions)
 		fout << c << endl;
-}
-
-void FileHandler::pushLogsToOutputFiles(vector<MatchManager*> matchVector, bool outputPathExists)
-{
-	if (outputPathExists || !outputPathExists) {
-		for (unsigned int i = 0; i < matchVector.size(); i++) {
-			/*for (int j = 0; j < matchVector[i]->algorithmsCount(); j++) {
-
-			}
-			matchVector[i]->*/
-		}
-	}
 }

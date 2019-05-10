@@ -31,7 +31,6 @@ private:
 	void						parsePairOfArguments(char * type, char * path);
 
 	Errors						m_errors;
-	GameManager *				m_manager = nullptr;
 
 	void						checkErrors(void* (titleFunc));
 	inline void					pushError(ErrorType type, const string & str) { m_errors.list.push_back(ErrorPair(type, str)); }
@@ -48,7 +47,6 @@ public:
 	void						pushActionsToOutputFile(ofstream & fout, vector<char> actions);
 	inline bool					invalidArgs() { return m_invalidArguments; }
 	inline bool					outputPathExists() { return m_outputPathExists; }
-	void						pushLogsToOutputFiles(vector<MatchManager *> matchVector, bool outputPathExists);
 };
 
 #endif
