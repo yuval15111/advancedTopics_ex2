@@ -76,22 +76,32 @@ void FileHandler::createAlgorithmVector(const string& path) {
 	pclose(dl);
 }
 
-void FileHandler::createOutputVector()
+void FileHandler::createOutput()
 {
-	
-	for (unsigned int i = 0; i < m_matchVector.size(); i++) {
-		string & mazeName = m_matchVector[i]->getName();
-		for (unsigned int j = 0; j < m_algorithmNameVector.size(); j++) {
-			string & algoName = m_algorithmNameVector[j];
-			m_outputVector.push_back(ofstream(m_outputPath + "/" + mazeName + "_" + algoName + ".output"));
-		}
+	/*cout << "---------------------------------------------------" << endl;
+	cout << "|             ";
+	for (unsigned int j = 0; j < m_matchVector.size(); j++) {
+		string & mazeName = m_matchVector[j]->getName();
+		cout << "|" << mazeName << "        ";
+	}
+	cout << "|" << endl;*/
+	for (unsigned int i = 0; i < m_algorithmNameVector.size(); i++) {
+		string & algoName = m_algorithmNameVector[i];
+		for (unsigned int j = 0; j < m_matchVector.size(); j++) {
+			string & mazeName = m_matchVector[j]->getName();
+			ofstream fout = ofstream(m_outputPath + "/" + mazeName + "_" + algoName + ".output");
+			vector<vector<char>> vec = m_matchVector[j]->getMoveListVector();
+			if (outputPathExists) {
+				for (char c : vec[i]) fout << c;
+			}
+
 	}
 }
 
 void FileHandler::initVectorsByCurrDirectory(const string & path) {
 	if (!m_algorithmPathExists) createAlgorithmVector(path);
 	if (!m_mazePathExists) createMatchVector(path);
-	if (m_outputPathExists) createOutputVector();
+	if (m_outputPathExists) createOutput();
 }
 
 // TODO: Finish method

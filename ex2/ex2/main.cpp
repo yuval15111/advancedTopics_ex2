@@ -6,6 +6,5 @@ int main(int argc, char* argv[]) {
 		printWrongArgumentsFormatError();
 		return EXIT_FAILURE;	// Arguments Errors - can't parse!
 	}
-	//fh.pushLogsToOutputFiles(matchVector, fh.outputPathExists());
 	return 0;
 }

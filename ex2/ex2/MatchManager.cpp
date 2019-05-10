@@ -9,8 +9,8 @@ void MatchManager::createGameManagers()
 	for (auto& algorithm : algorithms) {
 
 		cout << "MatchManager inside for: " << m_name << "max steps: " << m_maxSteps << endl;
-		 GameManager(m_name, m_maxSteps, m_rowsNum, m_colsNum,
-			m_board, m_playerLocation, m_endLocation, move(algorithm())).play();
+		 m_moveListVector.push_back(GameManager(m_name, m_maxSteps, m_rowsNum, m_colsNum,
+			m_board, m_playerLocation, m_endLocation, move(algorithm())).play());
 	}
 }
 

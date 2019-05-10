@@ -30,6 +30,7 @@ public:
 	void activateGameManagers();
 	inline string & getName() { return m_name; }
 	inline int algorithmsCount() { return m_algorithmNameVector.size(); }
+	inline vector<vector<char>> getMoveListVector() { return m_moveListVector; }
 };
 
 class AlgorithmRegistrar {

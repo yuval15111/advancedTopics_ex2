@@ -17,14 +17,15 @@ private:
 
 	vector<MatchManager *>		m_matchVector;
 	vector<string>				m_algorithmNameVector;
-	vector<ofstream>			m_outputVector;
+	//vector<ofstream>			m_outputVector;
+	vector<vector<char>>		m_outputVector;
 	string						m_outputPath;
 	vector<void *>				dlVector;
 	
 	void						initVectorsByCurrDirectory(const string& path);
 	void						createMatchVector(const string& path);
 	void						createAlgorithmVector(const string& path);
-	void						createOutputVector();
+	void						createOutput();
 	void						parsePairOfArguments(char * type, char * path);
 
 	Errors						m_errors;
