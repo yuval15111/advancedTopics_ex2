@@ -25,29 +25,19 @@ void FileHandler::createMatchVector(const string & path)
 		char* ws = strpbrk(in_buf, " \t\n");
 		if (ws) *ws = '\0';
 		string filename(in_buf);
-		//size_t index = filename.find("_308243351_");
-
 		cout << "FH - after getting mazeVector. " << endl;
-		//if ((index != string::npos) && (endsWith(filename, ".maze"))) {
-			//string mazeName = filename.substr(index, filename.length() - 5);
-			ifstream *fin = new ifstream(filename.c_str());
-
-			//fin.open();
-
-
-			cout << "FH - after open the fin. " << filename << endl;
-			if (!(*fin).is_open()) {
-				exit(EXIT_FAILURE); // TODO: check how to exit
-			}
-			MatchManager * mm = parseInput(fin);
-			if (mm == nullptr) {
-				// TODO: deallocate all memory allocations
-				return;
-			}
-			mm->createGameManagers();
-			m_matchVector.push_back(mm);
-			//m_mazeVector.push_back(fin);
-		//}
+		ifstream *fin = new ifstream(filename.c_str());
+		cout << "FH - after open the fin. " << filename << endl;
+		if (!(*fin).is_open()) {
+			exit(EXIT_FAILURE); // TODO: check how to exit
+		}
+		MatchManager * mm = parseInput(fin);
+		if (mm == nullptr) {
+			// TODO: deallocate all memory allocations
+			return;
+		}
+		mm->createGameManagers();
+		m_matchVector.push_back(mm);
 	}
 	pclose(dl);
 }
@@ -80,7 +70,6 @@ void FileHandler::createAlgorithmVector(const string& path) {
 				exit(EXIT_FAILURE);
 			}
 			dlVector.push_back(dlib);
-			//m_algorithmVector.push_back(make_pair(algorithmName, dlib));
 			m_algorithmNameVector.push_back(algorithmName);
 		}
 	}
