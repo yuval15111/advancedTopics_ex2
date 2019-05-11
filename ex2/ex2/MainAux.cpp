@@ -40,6 +40,15 @@ void printBadMazeWarning(string mazeName)
 	cout << "Warning: " << mazeName << " is invalid." << endl;
 }
 
+void printStreamError(string filename) {
+	cout << "Could not open " << filename << "." << endl;
+}
+
+void printPopenError()
+{
+	cout << "Error: error in popen command." << endl;
+}
+
 void printHeaderErrorTitle()
 {
 	cout << "Bad maze file header:" << endl;

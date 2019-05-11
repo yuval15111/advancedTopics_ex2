@@ -66,6 +66,8 @@ void printWinMessage(const int numOfSteps);
 void printLostMessage(const int numOfSteps);
 void printBadAlgorithmWarning(string algoName);
 void printBadMazeWarning(string mazeName);
+void printStreamError(string filename);
+void printPopenError();
 void printWrongArgumentsFormatError();
 void printHeaderErrorTitle();
 void printMazeErrorTitle();

@@ -22,6 +22,10 @@ private:
 
 	void						checkErrors(void* (titleFunc));
 	inline void					pushError(ErrorType type, const string & str) { m_errors.list.push_back(ErrorPair(type, str)); }
+	
+	FILE *						execCmd(const char * cmd);
+	ifstream *					openIFstream(const char * filename);
+	void						iterateOverMazeFiles(FILE * dl);
 
 	MatchManager *				parseMaze(ifstream * fin);
 	string						getName(ifstream * fin, string & line);

@@ -10,37 +10,47 @@ FileHandler::~FileHandler() {
 		if (dl != NULL)	dlclose(dl);
 }
 
-
-void FileHandler::getMatches() {
-	FILE* dl;  // handle to read directory 
-	string command_str = "ls " + m_mazePath + "/*.maze";
-	char in_buf[BUF_SIZE];
-	// get the names of all the .maze  files in the current directory
-	dl = popen(command_str.c_str(), "r");
+FILE * FileHandler::execCmd(const char * cmd) {
+	FILE * dl = popen(cmd, "r");
 	if (!dl) {
-		cout << "Error: error in popen command. " << strerror(errno) << endl;
-		return;
+		printPopenError();
+		return NULL;
 	}
-	
+}
+
+ifstream * FileHandler::openIFstream(const char * filename) {
+	ifstream *fin = new ifstream(filename);
+	if (!(*fin).is_open()) {
+		printStreamError(filename);
+		return nullptr;
+	}
+	return fin;
+}
+
+void FileHandler::iterateOverMazeFiles(FILE * dl) {
+	char in_buf[BUF_SIZE];
 	while (fgets(in_buf, BUF_SIZE, dl)) {
-		// trim off the whitespace 
+		// trim off the whitespace
 		char* ws = strpbrk(in_buf, " \t\n");
 		if (ws) *ws = '\0';
 		string filename(in_buf);
-		ifstream *fin = new ifstream(filename.c_str());
-		if (!(*fin).is_open()) {
-			exit(EXIT_FAILURE); // TODO: check how to exit
-		}
+		ifstream *fin = openIFstream(filename.c_str());
 		MatchManager * mm = parseMaze(fin);
 		delete fin;
 		if (mm == nullptr) {
 			printBadMazeWarning(filename);
-			continue;
+			continue; // bad maze - keep looking for other mazes
 		}
 		mm->createGameManagers();
 		m_matchVector.push_back(mm);
-		cout << "FH - created match " << mm->getName() << endl;
 	}
+}
+
+void FileHandler::getMatches() {
+	FILE* dl;  // handle to read directory 
+	string command_str = "ls " + m_mazePath + "/*.maze";
+	if ((dl = execCmd(command_str.c_str())) == NULL) return;
+	iterateOverMazeFiles(dl);
 	pclose(dl);
 }
 
@@ -80,7 +90,7 @@ void FileHandler::getAlgorithms() {
 void FileHandler::createOutput() {
 	if (m_algorithmNameVector.size() == 0 || m_matchVector.size() == 0) return; // nothing to do here
 
-	unsigned int column_length = 25, num_of_mazes = m_matchVector.size();
+	unsigned int column_length = 30, num_of_mazes = m_matchVector.size();
 
 	// seperation row
 	for (unsigned int i = 0; i < (column_length + 1) * (num_of_mazes + 1); i++) {
@@ -144,13 +154,17 @@ void FileHandler::createOutput() {
 			if (outputPathExists()) {
 				string & mazeName = m_matchVector[j]->getName();
 				ofstream fout = ofstream();
-				string path = m_outputPath + "/" + mazeName + "_" + algoName + ".output";
+				string filename = m_outputPath + "/" + mazeName + "_" + algoName + ".output";
 				int count = 1;
-				while (fileExists(path.c_str())) {
-					path = m_outputPath + "/" + mazeName + "_" + algoName + "(" + to_string(count) + ").output";
+				while (fileExists(filename.c_str())) {
+					filename = m_outputPath + "/" + mazeName + "_" + algoName + "(" + to_string(count) + ").output";
 					count++;
 				}
-				fout.open(path);
+				fout.open(filename);
+				if (!fout.is_open()) {
+					printStreamError(filename);
+					return;
+				}
 				for (char c : vec[i]) fout << c << endl;
 			}
 		}
