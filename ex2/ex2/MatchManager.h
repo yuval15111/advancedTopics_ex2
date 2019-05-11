@@ -37,7 +37,7 @@ private:
 	static AlgorithmRegistrar instance;
 	vector<function<unique_ptr<AbstractAlgorithm>()>> algorithmFactoryVec;
 	inline void registerAlgorithm(std::function<unique_ptr<AbstractAlgorithm>()> algorithmFactory) {
-		cout << "MM - registered some algorithm " << endl;
+		//cout << "MM - registered some algorithm " << endl;
 		instance.algorithmFactoryVec.push_back(algorithmFactory);
 	}
 public:
