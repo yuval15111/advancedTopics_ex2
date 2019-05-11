@@ -1,22 +1,6 @@
 #include "FileHandler.h"
 #include <algorithm>
 
-FileHandler::FileHandler(vector<string>& paths) {
-	m_mazePath = paths[MAZEPATH_INDEX];
-	m_algorithmPath = paths[ALGOPATH_INDEX];
-	m_outputPath = paths[OUTPUTPATH_INDEX];
-}
-
-FileHandler::~FileHandler() {
-	AlgorithmRegistrar::getInstance().clearVector();
-
-	for (MatchManager * mm : m_matchVector)
-		if (mm != nullptr) delete mm;
-
-	for (void * dl : dlVector)
-		if (dl != NULL)	dlclose(dl);
-}
-
 FILE * FileHandler::execCmd(const char * cmd) {
 	FILE * dl = popen(cmd, "r");
 	if (!dl) {
@@ -35,7 +19,7 @@ ifstream * FileHandler::openIFstream(const char * filename) {
 	return fin;
 }
 
-void FileHandler::iterateOverMazeFiles(FILE * dl) {
+void FileHandler::generateMatchesFromMazeFiles(FILE * dl) {
 	char in_buf[BUF_SIZE];
 	while (fgets(in_buf, BUF_SIZE, dl)) {
 		// trim off the whitespace
@@ -55,16 +39,8 @@ void FileHandler::iterateOverMazeFiles(FILE * dl) {
 	}
 }
 
-void FileHandler::getMatches() {
-	FILE* dl;  // handle to read directory 
-	string command_str = "ls " + m_mazePath + "/*.maze";
-	if ((dl = execCmd(command_str.c_str())) == NULL) return;
-	iterateOverMazeFiles(dl);
-	pclose(dl);
-}
 
-
-void FileHandler::iterateOverSOFiles(FILE * dl) {
+void FileHandler::generateAlgorithmsFromSoFiles(FILE * dl) {
 	void* dlib;
 	char in_buf[BUF_SIZE];
 	while (fgets(in_buf, BUF_SIZE, dl)) {
@@ -78,28 +54,28 @@ void FileHandler::iterateOverSOFiles(FILE * dl) {
 			dlib = dlopen(filename.c_str(), RTLD_LAZY);
 			if (dlib == NULL) {
 				printBadAlgorithmWarning(algorithmName);
-				continue;
+				continue; // bad so file - keep looking for other files
 			}
-			dlVector.emplace_back(dlib); // to be closed
+			m_dlVector.emplace_back(dlib); // to be closed
 			m_algorithmNameVector.push_back(algorithmName);
 		}
 	}
 }
 
-void FileHandler::getAlgorithms() {
-	FILE* dl;  // handle to read directory 
-	string command_str = "ls " + m_algorithmPath + "/*.so";
-	if ((dl = execCmd(command_str.c_str())) == NULL) return;
-	iterateOverSOFiles(dl);
-	pclose(dl);
-}
+/* --------------------------- output creation helper functions --------------------------- */
 
+/*	A helper function for createOutput().
+	params: an integer <num_of_mazes>.
+	This function prints a seperation row for the output table. */
 void FileHandler::printSeperationRow(unsigned int num_of_mazes) {
 	for (unsigned int i = 0; i < (COLUMN_LENGTH + 1) * (num_of_mazes + 1); i++)
 		cout << "-";
 	cout << endl;
 }
 
+/*	A helper function for createOutput().
+	params: an integer <num_of_mazes>.
+	This function prints a title for the output table, filled with all the mazes names. */
 void FileHandler::printTitles(unsigned int num_of_mazes) {
 	// first column - algorithms title
 	cout << "|";
@@ -117,6 +93,9 @@ void FileHandler::printTitles(unsigned int num_of_mazes) {
 	cout << "|" << endl;
 }
 
+/*	A helper function for createOutput().
+	params: an algorithm name <algoName>.
+	This function algoName at every row beginning in the output table. */
 void FileHandler::printAlgorithmName(string & algoName)
 {
 	cout << "|" << algoName;
@@ -125,21 +104,23 @@ void FileHandler::printAlgorithmName(string & algoName)
 	}
 }
 
-void FileHandler::printAlgorithmResultOnAllMazes(unsigned int i, string & algoName) {
-	for (unsigned int j = 0; j < m_matchVector.size(); j++) {
+/*	A helper function for createOutput().
+	params: an integer <num_of_mazes>, a MatchManager index <i> and an algorithm name <algoName>.
+	This function prints a line of the results for algoName running on each maze in the output table,
+	and creates an output file for each maze (if outputPath exists). */
+void FileHandler::printAlgorithmResultOnAllMazes(unsigned int num_of_mazes, unsigned int i, string & algoName) {
+	for (unsigned int j = 0; j < num_of_mazes; j++) {
 		vector<vector<char>> moveListVector = m_matchVector[j]->getMoveListVector();
 		cout << "|";
 		if (moveListVector[i][moveListVector[i].size() - 1] == '!') {
 			string str = to_string(moveListVector[i].size() - 1);
-			for (unsigned int k = 0; k < COLUMN_LENGTH - str.length(); k++) {
+			for (unsigned int k = 0; k < COLUMN_LENGTH - str.length(); k++)
 				cout << " ";
-			}
 			cout << str;
 		}
 		else {
-			for (unsigned int k = 0; k < COLUMN_LENGTH - 2; k++) {
+			for (unsigned int k = 0; k < COLUMN_LENGTH - 2; k++)
 				cout << " ";
-			}
 			cout << "-1";
 		}
 
@@ -152,6 +133,9 @@ void FileHandler::printAlgorithmResultOnAllMazes(unsigned int i, string & algoNa
 	cout << "|" << endl;
 }
 
+/*	A helper function for printAlgorithmResultOnAllMazes().
+	params: an algorithm name, a maze name and a move list.
+	This function creates an ofstream and pushes the move chars into it. */
 void FileHandler::createOutputFile(string & algoName, string & mazeName, vector<char>& moveList) {
 	ofstream fout = ofstream();
 	string filename = getAvaliableFileName(algoName, mazeName);
@@ -164,8 +148,9 @@ void FileHandler::createOutputFile(string & algoName, string & mazeName, vector<
 	fout.close();
 }
 
-/*	params: vector of game actions.
-	This function pushes the actions vector into the output file. */
+/*	A helper function for createOutputFile().
+	params: an open ofstream and a vector of game moves.
+	This function pushes the move chars into the output stream. */
 void FileHandler::pushMovesToOutputFile(ofstream & fout, vector<char>& moveList) {
 	for (const char & c : moveList)
 		fout << c << endl;
@@ -181,37 +166,9 @@ string FileHandler::getAvaliableFileName(string & algoName, string & mazeName) {
 	return filename;
 }
 
-void FileHandler::createOutput() {
-	if (m_algorithmNameVector.size() == 0 || m_matchVector.size() == 0) return; // nothing to do here
-	unsigned int num_of_mazes = m_matchVector.size();
-	printSeperationRow(num_of_mazes);
-	printTitles( num_of_mazes);
 
-	// information rows
-	for (unsigned int i = 0; i < m_algorithmNameVector.size(); i++) {
-		printSeperationRow(num_of_mazes);
-		string & algoName = m_algorithmNameVector[i];
-		printAlgorithmName(algoName);
-		printAlgorithmResultOnAllMazes(i, algoName);
-	}
-	printSeperationRow(num_of_mazes);
-}
+/* --------------------------------- maze parsing functions ------------------------------- */
 
-/*	This function checks if there are errors. If so: updates m_errors.noErrors field to false and prints the errors */
-void FileHandler::checkErrors(void*(titleFunc)) {
-	if (m_errors.list.size() == 0) return;
-	if (titleFunc != nullptr) { // parsing errors
-		FuncNoArgs f = (FuncNoArgs)titleFunc;
-		f();
-		m_errors.no_parsing_Errors = false;
-	}
-	for (ErrorList::iterator it = m_errors.list.begin(); it != m_errors.list.end(); ++it) {
-		Func f = m_errors.fmap[it->first];
-		string str = it->second;
-		f(str);
-	}
-	m_errors.list.clear();
-}
 
 /* This function parses the input file and creates the manager object. */
 MatchManager * FileHandler::parseMaze(ifstream * fin) {
@@ -233,7 +190,8 @@ MatchManager * FileHandler::parseMaze(ifstream * fin) {
 	return nullptr;
 }
 
-/* This function retrieves the name of the maze. */
+/*	A helper function for parseMaze().
+	This function retrieves the name of the maze. */
 string FileHandler::getName(ifstream * fin, string & line) {
 	if (getline(*fin, line)) {
 		return line;
@@ -241,7 +199,8 @@ string FileHandler::getName(ifstream * fin, string & line) {
 	return nullptr;
 }
 
-/* This function retrieves the integer value for lines 2-4. */
+/*	A helper function for parseMaze().
+	This function retrieves the integer value from lines 2-4. */
 int FileHandler::getIntValue(ifstream * fin, const string & input, const ErrorType error, string & line) {
 	const regex reg("\\s*" + input + "\\s*=\\s*[1-9][0-9]*\\s*$");
 
@@ -259,7 +218,9 @@ int FileHandler::getIntValue(ifstream * fin, const string & input, const ErrorTy
 	return -1;
 }
 
-/*	params: rows, col - parsed from maze file; references to playerLocation and endLocation that will be filled in this function;
+/*	A helper function for parseMaze().
+	params: rows, col - parsed from maze file;
+			references to playerLocation and endLocation that will be filled in this function;
 			refernce to line string which we fill with lines from the input and parse the file with.
 	return: A maze board object (two-dimensional character vector) */
 MazeBoard FileHandler::getBoard(ifstream * fin, const int rows, const int cols, Coordinate & playerLocation, Coordinate & endLocation, string & line) {
@@ -314,4 +275,72 @@ void FileHandler::handleInvalidChar(const char c, const int i, const int j) {
 	str[1] = (char)i;
 	str[2] = (char)j;
 	pushError(ErrorType::WrongChar, str);
+}
+
+/*	A helper function for parseMaze().
+	This function checks if there are errors. If so: updates m_errors.no_parsing_Errors field
+	to false and prints the errors. */
+void FileHandler::checkErrors(void*(titleFunc)) {
+	if (m_errors.list.size() == 0) return;
+	if (titleFunc != nullptr) { // parsing errors exist
+		FuncNoArgs f = (FuncNoArgs)titleFunc;
+		f();
+		m_errors.no_parsing_Errors = false;
+	}
+	for (ErrorList::iterator it = m_errors.list.begin(); it != m_errors.list.end(); ++it) {
+		Func f = m_errors.fmap[it->first];
+		string str = it->second;
+		f(str);
+	}
+	m_errors.list.clear();
+}
+
+/* ---------------------------------------------------------------------------------------- */
+/* ----------------------------- File Handler public functions ---------------------------- */
+/* ---------------------------------------------------------------------------------------- */
+
+/*	the d'tor is responsible for deleting every memory allocation that a FileHandler object  
+	has allocated during its life: factoryMethods, MatchManagers and dls. */
+FileHandler::~FileHandler() {
+	AlgorithmRegistrar::getInstance().clearVector();	// factoryMethod deletion
+	for (MatchManager * mm : m_matchVector)
+		if (mm != nullptr) delete mm;					// MatchManagers deletion
+	for (void * dl : m_dlVector)
+		if (dl != NULL)	dlclose(dl);					// dl objects deletion
+}
+
+/*	This function seeks for all the .so files from <m_algorithmPath> and generates
+	a maze solver algorithm from each of them. */
+void FileHandler::getAlgorithms() {
+	FILE* dl;  // handle to read directory 
+	string command_str = "ls " + m_algorithmPath + "/*.so";
+	if ((dl = execCmd(command_str.c_str())) == NULL) return;
+	generateAlgorithmsFromSoFiles(dl);
+	pclose(dl);
+}
+
+/*	This function seeks for all the .maze files from <m_mazePath> and generates
+	a maze match manager from each of them. */
+void FileHandler::getMatchesAndPlay() {
+	FILE* dl;  // handle to read directory 
+	string command_str = "ls " + m_mazePath + "/*.maze";
+	if ((dl = execCmd(command_str.c_str())) == NULL) return;
+	generateMatchesFromMazeFiles(dl);
+	pclose(dl);
+}
+
+void FileHandler::createOutput() {
+	if (m_algorithmNameVector.size() == 0 || m_matchVector.size() == 0) return; // nothing to do here
+	unsigned int num_of_mazes = m_matchVector.size();
+	printSeperationRow(num_of_mazes);
+	printTitles(num_of_mazes);
+
+	// information rows
+	for (unsigned int i = 0; i < m_algorithmNameVector.size(); i++) {
+		printSeperationRow(num_of_mazes);
+		string & algoName = m_algorithmNameVector[i];
+		printAlgorithmName(algoName);
+		printAlgorithmResultOnAllMazes(num_of_mazes, i, algoName);
+	}
+	printSeperationRow(num_of_mazes);
 }

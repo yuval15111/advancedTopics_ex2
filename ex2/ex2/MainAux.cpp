@@ -115,7 +115,7 @@ bool fileExists(const char* path) {
 	return (stat(path, &buf) == 0);
 }
 
-bool doesPathExist(const char* path) {
+bool pathExist(const char* path) {
 	struct stat statbuf;
 	return (stat(path, &statbuf) != -1 && S_ISDIR(statbuf.st_mode));
 }
@@ -146,15 +146,16 @@ bool endsWith(const string & mainStr, const string & toMatch)
 		mainStr.compare(mainStr.size() - toMatch.size(), toMatch.size(), toMatch) == 0;
 }
 
-bool initPaths(int argc, char * argv[], vector<string>& paths, vector<bool>& pathExists) {
+bool initPaths(int argc, char * argv[], vector<string>& paths) {
+	vector<bool> pathHasBeenGiven = { false, false, false };
 	bool validArgs = true;
 	switch (argc) {
 	case 7:
-		parsePairOfArguments(argv[5], argv[6], validArgs, paths, pathExists);
+		parsePairOfArguments(argv[5], argv[6], validArgs, paths, pathHasBeenGiven);
 	case 5:
-		parsePairOfArguments(argv[3], argv[4], validArgs, paths, pathExists);
+		parsePairOfArguments(argv[3], argv[4], validArgs, paths, pathHasBeenGiven);
 	case 3:
-		parsePairOfArguments(argv[1], argv[2], validArgs, paths, pathExists);
+		parsePairOfArguments(argv[1], argv[2], validArgs, paths, pathHasBeenGiven);
 	case 1:
 		break;
 	default:
@@ -164,25 +165,25 @@ bool initPaths(int argc, char * argv[], vector<string>& paths, vector<bool>& pat
 	return validArgs;
 }
 
-void parsePairOfArguments(char * type, char * path, bool & validArgs, vector<string>& paths, vector<bool>& pathExists) {
+void parsePairOfArguments(char * type, char * path, bool & validArgs, vector<string>& paths, vector<bool>& pathHasBeenGiven) {
 
-	if (strcmp(type, "-maze_path") == 0 && doesPathExist(path)) { // .maze folder path
-		if (!pathExists[MAZEPATH_INDEX]) {
-			pathExists[MAZEPATH_INDEX] = true;
+	if (strcmp(type, "-maze_path") == 0 && pathExist(path)) { // .maze folder path
+		if (!pathHasBeenGiven[MAZEPATH_INDEX]) {
+			pathHasBeenGiven[MAZEPATH_INDEX] = true;
 			paths[MAZEPATH_INDEX] = path;
 		}
 		else validArgs = false;
 	}
-	else if (strcmp(type, "-algorithm_path") == 0 && doesPathExist(path)) { // .so folder path
-		if (!pathExists[ALGOPATH_INDEX]) {
-			pathExists[ALGOPATH_INDEX] = true;
+	else if (strcmp(type, "-algorithm_path") == 0 && pathExist(path)) { // .so folder path
+		if (!pathHasBeenGiven[ALGOPATH_INDEX]) {
+			pathHasBeenGiven[ALGOPATH_INDEX] = true;
 			paths[ALGOPATH_INDEX] = path;
 		}
 		else validArgs = false;
 	}
-	else if (strcmp(type, "-output") == 0 && doesPathExist(path)) { // .output folder path
-		if (!pathExists[OUTPUTPATH_INDEX]) {
-			pathExists[OUTPUTPATH_INDEX] = true;
+	else if (strcmp(type, "-output") == 0 && pathExist(path)) { // .output folder path
+		if (!pathHasBeenGiven[OUTPUTPATH_INDEX]) {
+			pathHasBeenGiven[OUTPUTPATH_INDEX] = true;
 			paths[OUTPUTPATH_INDEX] = path;
 		}
 		else validArgs = false;
