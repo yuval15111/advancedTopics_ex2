@@ -99,7 +99,7 @@ bool fileExists(const char* path);
 char getMoveChar(const Move& a);
 void updateCoordinate(Coordinate & c, const int i, const int j);
 bool endsWith(const string & mainStr, const string & toMatch);
-bool initPaths(int argc, char * argv[], string paths[3], bool pathExists[3]);
-void parsePairOfArguments(char * type, char * path, bool & validArgs, string paths[3], bool pathExists[3]);
+bool initPaths(int argc, char * argv[], string (&paths)[3], bool (&pathExists)[3]);
+void parsePairOfArguments(char * type, char * path, bool & validArgs, string (&paths)[3], bool (&pathExists)[3]);
 
 #endif

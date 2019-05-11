@@ -55,20 +55,12 @@ void FileHandler::getMatches() {
 	pclose(dl);
 }
 
-void FileHandler::getAlgorithms() {
-	FILE* dl;  // handle to read directory 
-	string command_str = "ls " + m_algorithmPath + "/*.so";
-	char in_buf[BUF_SIZE]; // input buffer for lib names 
-	// get the names of all the dynamic libs (.so  files) in the current dir 
-	dl = popen(command_str.c_str(), "r");
-	if (!dl) {
-		cout << "Error: error in popen command. " << strerror(errno) << endl;
-		exit(EXIT_FAILURE); //TODO: check if exitting is legal
-	}
-	void* dlib;
 
+void FileHandler::iterateOverSOFiles(FILE * dl) {
+	void* dlib;
+	char in_buf[BUF_SIZE];
 	while (fgets(in_buf, BUF_SIZE, dl)) {
-		// trim off the whitespace 
+		// trim off the whitespace
 		char* ws = strpbrk(in_buf, " \t\n");
 		if (ws) *ws = '\0';
 		string filename(in_buf);
@@ -85,6 +77,16 @@ void FileHandler::getAlgorithms() {
 			cout << "FH - created algorithm " << algorithmName << endl;
 		}
 	}
+}
+
+
+
+
+void FileHandler::getAlgorithms() {
+	FILE* dl;  // handle to read directory 
+	string command_str = "ls " + m_algorithmPath + "/*.so";
+	if ((dl = execCmd(command_str.c_str())) == NULL) return;
+	iterateOverSOFiles(dl);
 	pclose(dl);
 }
 

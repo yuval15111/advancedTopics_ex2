@@ -26,6 +26,7 @@ private:
 	FILE *						execCmd(const char * cmd);
 	ifstream *					openIFstream(const char * filename);
 	void						iterateOverMazeFiles(FILE * dl);
+	void						iterateOverSOFiles(FILE * dl);
 
 	MatchManager *				parseMaze(ifstream * fin);
 	string						getName(ifstream * fin, string & line);
