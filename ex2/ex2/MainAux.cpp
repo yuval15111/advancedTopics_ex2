@@ -146,7 +146,7 @@ bool endsWith(const string & mainStr, const string & toMatch)
 		mainStr.compare(mainStr.size() - toMatch.size(), toMatch.size(), toMatch) == 0;
 }
 
-bool initPaths(int argc, char * argv[], string (&paths)[3], bool (&pathExists)[3]) {
+bool initPaths(int argc, char * argv[], vector<string>& paths, vector<bool>& pathExists) {
 	bool validArgs = true;
 	switch (argc) {
 	case 7:
@@ -156,17 +156,15 @@ bool initPaths(int argc, char * argv[], string (&paths)[3], bool (&pathExists)[3
 	case 3:
 		parsePairOfArguments(argv[1], argv[2], validArgs, paths, pathExists);
 	case 1:
-		//init();
 		break;
 	default:
 		validArgs = false;
 		break;
 	}
 	return validArgs;
-	//if (!validArgs) printWrongArgumentsFormatError();
 }
 
-void parsePairOfArguments(char * type, char * path, bool & validArgs, string (&paths)[3], bool (&pathExists)[3]) {
+void parsePairOfArguments(char * type, char * path, bool & validArgs, vector<string>& paths, vector<bool>& pathExists) {
 
 	if (strcmp(type, "-maze_path") == 0 && doesPathExist(path)) { // .maze folder path
 		if (!pathExists[MAZEPATH_INDEX]) {

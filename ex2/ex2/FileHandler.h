@@ -36,7 +36,7 @@ private:
 	void						handleInvalidChar(const char c, const int i, const int j);
 
 public:
-	FileHandler(string paths[3]);
+	FileHandler(vector<string> paths);
 	~FileHandler();
 	void						getMatches();
 	void						getAlgorithms();

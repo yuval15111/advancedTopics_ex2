@@ -1,5 +1,12 @@
 #include "FileHandler.h"
 #include <algorithm>
+
+FileHandler::FileHandler(vector<string> paths) {
+	m_mazePath = paths[MAZEPATH_INDEX];
+	m_algorithmPath = paths[ALGOPATH_INDEX];
+	m_outputPath = paths[OUTPUTPATH_INDEX];
+}
+
 FileHandler::~FileHandler() {
 	AlgorithmRegistrar::getInstance().clearVector();
 
@@ -179,12 +186,6 @@ void FileHandler::createOutput() {
 		cout << "-";
 	}
 	cout << endl;
-}
-
-FileHandler::FileHandler(string paths[3]) {
-	m_mazePath = paths[MAZEPATH_INDEX];
-	m_algorithmPath = paths[ALGOPATH_INDEX];
-	m_outputPath = paths[OUTPUTPATH_INDEX];
 }
 
 /*	This function checks if there are errors. If so: updates m_errors.noErrors field to false and prints the errors */
