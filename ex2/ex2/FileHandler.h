@@ -6,6 +6,7 @@
 #include <dlfcn.h>
 
 #define BUF_SIZE 1024
+#define COLUMN_LENGTH 30
 
 class FileHandler {
 private:
@@ -28,6 +29,13 @@ private:
 	void						iterateOverMazeFiles(FILE * dl);
 	void						iterateOverSOFiles(FILE * dl);
 
+	void						printSeperationRow(unsigned int num_of_mazes);
+	void						printTitles(unsigned int num_of_mazes);
+	void						printAlgorithmName(string & algoName);
+	void						printAlgorithmResultOnAllMazes(unsigned int i, string & algoName);
+	void						createOutputFile(string & algoName, string & mazeName, vector<char> & moveList);
+	string &					getAvaliableFileName(string & algoName, string & mazeName);
+
 	MatchManager *				parseMaze(ifstream * fin);
 	string						getName(ifstream * fin, string & line);
 	int							getIntValue(ifstream * fin, const string & input, const ErrorType error, string & line);
@@ -36,7 +44,7 @@ private:
 	void						handleInvalidChar(const char c, const int i, const int j);
 
 public:
-	FileHandler(vector<string> paths);
+	FileHandler(vector<string>& paths);
 	~FileHandler();
 	void						getMatches();
 	void						getAlgorithms();

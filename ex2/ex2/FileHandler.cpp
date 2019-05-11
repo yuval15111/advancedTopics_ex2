@@ -1,7 +1,7 @@
 #include "FileHandler.h"
 #include <algorithm>
 
-FileHandler::FileHandler(vector<string> paths) {
+FileHandler::FileHandler(vector<string>& paths) {
 	m_mazePath = paths[MAZEPATH_INDEX];
 	m_algorithmPath = paths[ALGOPATH_INDEX];
 	m_outputPath = paths[OUTPUTPATH_INDEX];
@@ -44,6 +44,7 @@ void FileHandler::iterateOverMazeFiles(FILE * dl) {
 		string filename(in_buf);
 		ifstream *fin = openIFstream(filename.c_str());
 		MatchManager * mm = parseMaze(fin);
+		(*fin).close();
 		delete fin;
 		if (mm == nullptr) {
 			printBadMazeWarning(filename);
@@ -86,9 +87,6 @@ void FileHandler::iterateOverSOFiles(FILE * dl) {
 	}
 }
 
-
-
-
 void FileHandler::getAlgorithms() {
 	FILE* dl;  // handle to read directory 
 	string command_str = "ls " + m_algorithmPath + "/*.so";
@@ -97,95 +95,100 @@ void FileHandler::getAlgorithms() {
 	pclose(dl);
 }
 
-void FileHandler::createOutput() {
-	if (m_algorithmNameVector.size() == 0 || m_matchVector.size() == 0) return; // nothing to do here
-
-	unsigned int column_length = 30, num_of_mazes = m_matchVector.size();
-
-	// seperation row
-	for (unsigned int i = 0; i < (column_length + 1) * (num_of_mazes + 1); i++) {
+void FileHandler::printSeperationRow(unsigned int num_of_mazes) {
+	for (unsigned int i = 0; i < (COLUMN_LENGTH + 1) * (num_of_mazes + 1); i++)
 		cout << "-";
-	}
 	cout << endl;
+}
 
-	// -------------titles------------
-
+void FileHandler::printTitles(unsigned int num_of_mazes) {
 	// first column - algorithms title
 	cout << "|";
-	for (unsigned int i = 0; i < column_length; i++) {
+	for (unsigned int i = 0; i < COLUMN_LENGTH; i++)
 		cout << " ";
-	}
 
 	// rest of the columns - mazes titles
 	for (unsigned int j = 0; j < num_of_mazes; j++) {
 		string & mazeName = m_matchVector[j]->getName();
 		cout << "|" << mazeName;
-		for (unsigned int i = 0; i < column_length - mazeName.length(); i++) {
+		for (unsigned int i = 0; i < COLUMN_LENGTH - mazeName.length(); i++) {
 			cout << " ";
 		}
 	}
 	cout << "|" << endl;
+}
+
+void FileHandler::printAlgorithmName(string & algoName)
+{
+	cout << "|" << algoName;
+	for (unsigned int j = 0; j < COLUMN_LENGTH - algoName.length(); j++) {
+		cout << " ";
+	}
+}
+
+void FileHandler::printAlgorithmResultOnAllMazes(unsigned int i, string & algoName) {
+	for (unsigned int j = 0; j < m_matchVector.size(); j++) {
+		vector<vector<char>> moveListVector = m_matchVector[j]->getMoveListVector();
+		cout << "|";
+		if (moveListVector[i][moveListVector[i].size() - 1] == '!') {
+			string str = to_string(moveListVector[i].size() - 1);
+			for (unsigned int k = 0; k < COLUMN_LENGTH - str.length(); k++) {
+				cout << " ";
+			}
+			cout << str;
+		}
+		else {
+			for (unsigned int k = 0; k < COLUMN_LENGTH - 2; k++) {
+				cout << " ";
+			}
+			cout << "-1";
+		}
+
+		// output file handling
+		if (outputPathExists()) {
+			string & mazeName = m_matchVector[j]->getName();
+			createOutputFile(algoName, mazeName, moveListVector[i]);
+		}
+	}
+	cout << "|" << endl;
+}
+
+void FileHandler::createOutputFile(string & algoName, string & mazeName, vector<char>& moveList) {
+	ofstream fout = ofstream();
+	string filename = getAvaliableFileName(algoName, mazeName);
+	fout.open(filename);
+	if (!fout.is_open()) {
+		printStreamError(filename);
+		return;
+	}
+	for (char c : moveList) fout << c << endl;
+	fout.close();
+}
+
+string & FileHandler::getAvaliableFileName(string & algoName, string & mazeName) {
+	string filename = m_outputPath + "/" + mazeName + "_" + algoName + ".output";
+	int count = 1;
+	while (fileExists(filename.c_str())) {
+		filename = m_outputPath + "/" + mazeName + "_" + algoName + "(" + to_string(count) + ").output";
+		count++;
+	}
+	return filename;
+}
+
+void FileHandler::createOutput() {
+	if (m_algorithmNameVector.size() == 0 || m_matchVector.size() == 0) return; // nothing to do here
+	unsigned int num_of_mazes = m_matchVector.size();
+	printSeperationRow(num_of_mazes);
+	printTitles( num_of_mazes);
 
 	// information rows
 	for (unsigned int i = 0; i < m_algorithmNameVector.size(); i++) {
-
-		// seperation row
-		for (unsigned int j = 0; j < (column_length + 1) * (num_of_mazes + 1); j++) {
-			cout << "-";
-		}
-		cout << endl;
-
-		// algorithm name
+		printSeperationRow(num_of_mazes);
 		string & algoName = m_algorithmNameVector[i];
-		cout << "|" << algoName;
-		for (unsigned int j = 0; j < column_length - algoName.length(); j++) {
-			cout << " ";
-		}
-
-		// algorithm information for each maze
-		for (unsigned int j = 0; j < m_matchVector.size(); j++) {
-			vector<vector<char>> vec = m_matchVector[j]->getMoveListVector();
-			cout << "|";
-			if (vec[i][vec[i].size() - 1] == '!') {
-				string str = to_string(vec[i].size() - 1);
-				for (unsigned int k = 0; k < column_length - str.length(); k++) {
-					cout << " ";
-				}
-				cout << str;
-			}
-			else {
-				for (unsigned int k = 0; k < column_length - 2; k++) {
-					cout << " ";
-				}
-				cout << "-1";
-			}
-
-			// output file handling
-			if (outputPathExists()) {
-				string & mazeName = m_matchVector[j]->getName();
-				ofstream fout = ofstream();
-				string filename = m_outputPath + "/" + mazeName + "_" + algoName + ".output";
-				int count = 1;
-				while (fileExists(filename.c_str())) {
-					filename = m_outputPath + "/" + mazeName + "_" + algoName + "(" + to_string(count) + ").output";
-					count++;
-				}
-				fout.open(filename);
-				if (!fout.is_open()) {
-					printStreamError(filename);
-					return;
-				}
-				for (char c : vec[i]) fout << c << endl;
-			}
-		}
-		cout << "|" << endl;
+		printAlgorithmName(algoName);
+		printAlgorithmResultOnAllMazes(i, algoName);
 	}
-
-	// seperation row
-	for (unsigned int i = 0; i < (column_length + 1) * (num_of_mazes + 1); i++) {
-		cout << "-";
-	}
-	cout << endl;
+	printSeperationRow(num_of_mazes);
 }
 
 /*	This function checks if there are errors. If so: updates m_errors.noErrors field to false and prints the errors */
