@@ -13,7 +13,7 @@ MoveList GameManager::play() {
 		else {
 			execute(m);											// MANAGER: OK, LET ME WRITE THAT DOWN...
 			if (playerHitsEndChar()) {
-				printWinMessage(i);								// MANAGER: OMG YOU DID IT! I ALWAYS BELIEVED IN YOU
+				//printWinMessage(i);							// MANAGER: OMG YOU DID IT! I ALWAYS BELIEVED IN YOU
 				moveList.push_back('!');
 				return moveList;
 			}
@@ -27,7 +27,7 @@ MoveList GameManager::play() {
 		}
 	}
 	moveList.push_back('X');
-	printLostMessage(m_maxSteps);								// MANAGER: YOU SHOULD TRY HARDER NEXT TIME. CYA!
+	//printLostMessage(m_maxSteps);								// MANAGER: YOU SHOULD TRY HARDER NEXT TIME. CYA!
 	return moveList;
 }
 
