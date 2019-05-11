@@ -165,7 +165,7 @@ void FileHandler::createOutputFile(string & algoName, string & mazeName, vector<
 	fout.close();
 }
 
-string & FileHandler::getAvaliableFileName(string & algoName, string & mazeName) {
+string FileHandler::getAvaliableFileName(string & algoName, string & mazeName) {
 	string filename = m_outputPath + "/" + mazeName + "_" + algoName + ".output";
 	int count = 1;
 	while (fileExists(filename.c_str())) {

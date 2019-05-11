@@ -34,7 +34,7 @@ private:
 	void						printAlgorithmName(string & algoName);
 	void						printAlgorithmResultOnAllMazes(unsigned int i, string & algoName);
 	void						createOutputFile(string & algoName, string & mazeName, vector<char> & moveList);
-	string &					getAvaliableFileName(string & algoName, string & mazeName);
+	string						getAvaliableFileName(string & algoName, string & mazeName);
 
 	MatchManager *				parseMaze(ifstream * fin);
 	string						getName(ifstream * fin, string & line);
