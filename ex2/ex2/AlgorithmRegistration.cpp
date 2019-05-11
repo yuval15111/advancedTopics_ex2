@@ -2,8 +2,6 @@
 #include "MatchManager.h"
 
 //registers a new algorithm
-AlgorithmRegistration::AlgorithmRegistration(std::function<std::unique_ptr<AbstractAlgorithm>()> factoryMethod)
-{
-	//cout << "AR - constructor " << endl;
+AlgorithmRegistration::AlgorithmRegistration(std::function<std::unique_ptr<AbstractAlgorithm>()> factoryMethod) {
 	AlgorithmRegistrar::getInstance().registerAlgorithm(factoryMethod);
 }

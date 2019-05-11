@@ -82,7 +82,6 @@ void FileHandler::iterateOverSOFiles(FILE * dl) {
 			}
 			dlVector.emplace_back(dlib); // to be closed
 			m_algorithmNameVector.push_back(algorithmName);
-			cout << "FH - created algorithm " << algorithmName << endl;
 		}
 	}
 }
@@ -161,8 +160,15 @@ void FileHandler::createOutputFile(string & algoName, string & mazeName, vector<
 		printStreamError(filename);
 		return;
 	}
-	for (char c : moveList) fout << c << endl;
+	pushMovesToOutputFile(fout, moveList);
 	fout.close();
+}
+
+/*	params: vector of game actions.
+	This function pushes the actions vector into the output file. */
+void FileHandler::pushMovesToOutputFile(ofstream & fout, vector<char>& moveList) {
+	for (const char & c : moveList)
+		fout << c << endl;
 }
 
 string FileHandler::getAvaliableFileName(string & algoName, string & mazeName) {
@@ -308,11 +314,4 @@ void FileHandler::handleInvalidChar(const char c, const int i, const int j) {
 	str[1] = (char)i;
 	str[2] = (char)j;
 	pushError(ErrorType::WrongChar, str);
-}
-
-/*	params: vector of game actions.
-	This function pushes the actions vector into the output file. */
-void FileHandler::pushActionsToOutputFile(ofstream & fout, vector<char> actions) {
-	for (const char & c : actions)
-		fout << c << endl;
 }

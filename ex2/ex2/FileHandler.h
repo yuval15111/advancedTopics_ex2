@@ -35,6 +35,7 @@ private:
 	void						printAlgorithmResultOnAllMazes(unsigned int i, string & algoName);
 	void						createOutputFile(string & algoName, string & mazeName, vector<char> & moveList);
 	string						getAvaliableFileName(string & algoName, string & mazeName);
+	void						pushMovesToOutputFile(ofstream & fout, vector<char>& moveList);
 
 	MatchManager *				parseMaze(ifstream * fin);
 	string						getName(ifstream * fin, string & line);
@@ -49,7 +50,6 @@ public:
 	void						getMatches();
 	void						getAlgorithms();
 	void						createOutput();
-	void						pushActionsToOutputFile(ofstream & fout, vector<char> actions);
 	inline bool					outputPathExists() { return m_outputPath.compare("") != 0; }
 };
 
