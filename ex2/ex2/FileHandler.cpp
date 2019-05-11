@@ -3,6 +3,7 @@
 
 /* -------------- maze and so files searching and reading functions ----------------- */
 
+/* This function opens a pipe contains the output of cmd command. */
 FILE * FileHandler::execCmd(const char * cmd) {
 	FILE * dl = popen(cmd, "r");
 	if (!dl) {
@@ -12,6 +13,7 @@ FILE * FileHandler::execCmd(const char * cmd) {
 	return dl;
 }
 
+/* This function opens an ifstream for a maze file to be read. */
 ifstream * FileHandler::openIFstream(const char * filename) {
 	ifstream *fin = new ifstream(filename);
 	if (!(*fin).is_open()) {
@@ -21,6 +23,8 @@ ifstream * FileHandler::openIFstream(const char * filename) {
 	return fin;
 }
 
+/*	This function iterates over a list of .so files in the correct format
+	in a pipe <dl>, and parses them into algorithms. */
 void FileHandler::generateAlgorithmsFromSoFiles(FILE * dl) {
 	void* dlib;
 	char in_buf[BUF_SIZE];
@@ -43,6 +47,8 @@ void FileHandler::generateAlgorithmsFromSoFiles(FILE * dl) {
 	}
 }
 
+/*	This function iterates over a list of .maze files in the correct format
+	in a pipe <dl>, and parses them into MatchManager objects (each represents a maze). */
 void FileHandler::generateMatchesFromMazeFiles(FILE * dl) {
 	char in_buf[BUF_SIZE];
 	while (fgets(in_buf, BUF_SIZE, dl)) {
@@ -66,27 +72,34 @@ void FileHandler::generateMatchesFromMazeFiles(FILE * dl) {
 /* ------------------------------ maze parsing functions ---------------------------- */
 
 
-/*	This is the main parsing function, which parses an input stream
-	and creates the MatchManager object. */
+/*	This is the maze parsing function, which parses an input stream
+	and creates a MatchManager object. */
 MatchManager * FileHandler::parseMaze(ifstream * fin) {
 	m_errors.no_parsing_Errors = true;
 	string line;
-	// Collect maze parameters
+
+	// Collect maze parameters:
 	string name = getName(fin, line);
 	int maxSteps = getIntValue(fin, MAXSTEPS, ErrorType::MaxStepsError, line);
 	int rowsNum = getIntValue(fin, ROWS, ErrorType::RowsError, line);
 	int colsNum = getIntValue(fin, COLS, ErrorType::ColsError, line);
-	// Check errors in lines 2-4
+
+	// Check errors in lines 2-4:
 	checkErrors((void*)printHeaderErrorTitle);
+
 	if (m_errors.no_parsing_Errors) {	// No errors, lines 2-4 are valid.
 		Coordinate playerLocation, endLocation;
 		// Collect other maze properties
 		MazeBoard board = getBoard(fin, rowsNum, colsNum, playerLocation, endLocation, line);
+
+		// Check errors in the maze itself:
 		checkErrors((void*)printMazeErrorTitle);
+
 		if (m_errors.no_parsing_Errors)	// No errors, maze file is valid - creates a MatchManager object
 			return new MatchManager(name, maxSteps, rowsNum, colsNum,
 				board, playerLocation, endLocation, m_algorithmNameVector);
 	}
+
 	return nullptr;
 }
 
@@ -197,6 +210,7 @@ void FileHandler::checkErrors(void*(titleFunc)) {
 
 /* -------------------------------- other helper functions -------------------------------- */
 
+/* This function retrieves a vector of all the mazes' names. */
 vector<string> FileHandler::getMazeNamesVector() {
 	vector<string> vec;
 	for (unsigned int i = 0; i < m_matchVector.size(); i++)
@@ -204,6 +218,7 @@ vector<string> FileHandler::getMazeNamesVector() {
 	return vec;
 }
 
+/* This function retrieves a vector of all the mazes' MoveLists objects. */
 vector<MatchMoveLists> FileHandler::getAllMatchesMoveLists() {
 	vector<MatchMoveLists> vec;
 	for (unsigned int i = 0; i < m_matchVector.size(); i++)
@@ -252,9 +267,9 @@ void FileHandler::createOutput() {
 	vector<string> mazeNamesVec = getMazeNamesVector();
 	unsigned int num_of_mazes = m_matchVector.size();
 	printSeperationRow(num_of_mazes);
-	printTitles(num_of_mazes, mazeNamesVec);
+	printTitles(num_of_mazes, mazeNamesVec); // Table title
 
-	// information rows
+	// Informative table rows:
 	for (unsigned int i = 0; i < m_algorithmNameVector.size(); i++) {
 		printSeperationRow(num_of_mazes);
 		string & algoName = m_algorithmNameVector[i];

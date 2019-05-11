@@ -2,14 +2,15 @@
 
 /* -------------------------- GameManager main functions ---------------------------- */
 
-/* This function emulates the GameManager algorithm. */
+/*	This function emulates the GameManager's algorithm.
+	return: A MoveList object, contains all the moves the GameManager's algorithm did. */
 MoveList GameManager::play() {
 	MoveList moveList;
 	int seq;
 	for (int i = 1; i <= m_maxSteps; ++i) {
 		Move m = m_algorithm->move();							// PLAYER: THIS IS MY MOVE!
 		moveList.push_back(getMoveChar(m));
-		if (m == Move::BOOKMARK)	updateBookmark();
+		if (m == Move::BOOKMARK) updateBookmark();
 		else {
 			execute(m);											// MANAGER: OK, LET ME WRITE THAT DOWN...
 			if (playerHitsEndChar()) {
@@ -31,8 +32,10 @@ MoveList GameManager::play() {
 	return moveList;
 }
 
-void GameManager::execute(Move a, const bool undo)
-{
+/*	This function is responsible of updating the player's actual location in the maze.
+	params: A Move <a>, and a boolean <undo>.
+	if undo == true, then the player will move to its previous position. */
+void GameManager::execute(Move a, const bool undo) {
 	a = undo ? !a : a;
 	switch (a) {
 	case Move::UP:

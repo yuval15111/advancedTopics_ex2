@@ -1,21 +1,7 @@
 #include "MainAux.h"
 
-/* return: the opposite direction of Move a */
-Move operator!(const Move& a) {
-	switch (a) {
-	case Move::UP:
-		return Move::DOWN;
-	case Move::DOWN:
-		return Move::UP;
-	case Move::LEFT:
-		return Move::RIGHT;
-	case Move::RIGHT:
-		return Move::LEFT;
-	default:
-		return a;
-	}
-}
 
+/* ------------------------------- Event messages functions ------------------------------- */
 
 void printWinMessage(const int numOfSteps) {
 	cout << "Succeeded in " << numOfSteps << " steps" << endl;
@@ -109,43 +95,33 @@ void printWrongCharError(const string & str)
 		cout << "Wrong character in maze: " << str[0] << " in row " << ((int)str[1] + 1) << ", col " << ((int)str[2] + 1) << endl;
 }
 
-/* return true iff the file in path exists */
+
+
+
+
+/* ------------------------------- Parsing helper functions ------------------------------ */
+
+/* This function returns true iff <path> is an existing file path. */
 bool fileExists(const char* path) {
 	struct stat buf;
 	return (stat(path, &buf) == 0);
 }
 
+/* This function returns true iff <path> is an existing directory. */
 bool pathExist(const char* path) {
 	struct stat statbuf;
 	return (stat(path, &statbuf) != -1 && S_ISDIR(statbuf.st_mode));
 }
 
-char getMoveChar(const Move& a) {
-	switch (a) {
-	case Move::UP:
-		return 'U';
-	case Move::DOWN:
-		return 'D';
-	case Move::LEFT:
-		return 'L';
-	case Move::RIGHT:
-		return 'R';
-	default:
-		return 'B';
-	}
-}
-
-void updateCoordinate(Coordinate & c, const int i, const int j) {
-	c.first = i;
-	c.second = j;
-}
-
+/* This function returns true iff <mainStr> string ends with <toMatch> string. */
 bool endsWith(const string & mainStr, const string & toMatch)
 {
 	return mainStr.size() >= toMatch.size() &&
 		mainStr.compare(mainStr.size() - toMatch.size(), toMatch.size(), toMatch) == 0;
 }
 
+/*	This function fills <paths> string vector with the paths entered in the arguments,
+	and returns true iff the program's arguments are valid according to the guidelines. */
 bool initPaths(int argc, char * argv[], vector<string>& paths) {
 	vector<bool> pathHasBeenGiven = { false, false, false };
 	bool validArgs = true;
@@ -165,6 +141,9 @@ bool initPaths(int argc, char * argv[], vector<string>& paths) {
 	return validArgs;
 }
 
+/*	This function indicates what is <path> are according to the guidelines:
+	A maze path, an algorithm path ot an output path.
+	Accordingly, it puts <path> in it's right position in <paths> vector.  */
 void parsePairOfArguments(char * type, char * path, bool & validArgs, vector<string>& paths, vector<bool>& pathHasBeenGiven) {
 
 	if (strcmp(type, "-maze_path") == 0 && pathExist(path)) { // .maze folder path
@@ -190,6 +169,50 @@ void parsePairOfArguments(char * type, char * path, bool & validArgs, vector<str
 	}
 	else validArgs = false;
 }
+
+
+
+
+
+/* -------------------------- GameManager play() helper functions ------------------------ */
+
+/* This function retrieves the capital letter representing the Move <a>. */
+char getMoveChar(const Move& a) {
+	switch (a) {
+	case Move::UP:
+		return 'U';
+	case Move::DOWN:
+		return 'D';
+	case Move::LEFT:
+		return 'L';
+	case Move::RIGHT:
+		return 'R';
+	default:
+		return 'B';
+	}
+}
+
+/* This function returns the opposite direction of Move <a> */
+Move operator!(const Move& a) {
+	switch (a) {
+	case Move::UP:
+		return Move::DOWN;
+	case Move::DOWN:
+		return Move::UP;
+	case Move::LEFT:
+		return Move::RIGHT;
+	case Move::RIGHT:
+		return Move::LEFT;
+	default:
+		return a;
+	}
+}
+
+void updateCoordinate(Coordinate & c, const int i, const int j) {
+	c.first = i;
+	c.second = j;
+}
+
 
 
 
@@ -279,6 +302,8 @@ void pushMovesToOutputFile(ofstream & fout, const MoveList& moveList) {
 		fout << c << endl;
 }
 
+/*	A helper function for createOutputFile().
+	Returns a valid, non-taken output file path. */
 string getAvaliableFileName(const string& path, const string & algoName, const string & mazeName) {
 	string filename = path + "/" + mazeName + "_" + algoName + ".output";
 	int count = 1;

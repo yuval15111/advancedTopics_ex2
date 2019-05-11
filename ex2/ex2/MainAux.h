@@ -42,20 +42,12 @@
 
 #define TABLE_COLUMN_LENGTH 30
 
-enum class ErrorType {
-	MaxStepsError, RowsError, ColsError,
-	MissingPlayerChar, MissingEndChar,
-	MoreThanOnePlayerChar, MoreThanOneEndChar,
-	WrongChar
-};
+/* ---------------------------- typedefs/using for readability ---------------------------- */
 
 using namespace std;
 using MazeRow = vector<char>;
 using MazeBoard = vector<MazeRow>;
 using Coordinate = pair<int, int>;
-using MazePair = pair<string, ifstream*>; // the name of the maze and the stream
-using AlgorithmPair = pair<string, void*>; // the name of the algorithm and the .so file
-using OutputPair = pair<string, ofstream&>; // the name of the output file and the stream
 using ErrorPair = pair<ErrorType, string>;
 using ErrorList = vector<ErrorPair>;
 using AlgorithmFactory = function<unique_ptr<AbstractAlgorithm>()>;
@@ -65,9 +57,8 @@ typedef void(*Func) (const string & str);
 typedef void(*FuncNoArgs) ();
 typedef AbstractAlgorithm::Move Move;
 
-Move		operator!						(const Move& a);
+/* ------------------------------- Event messages functions ------------------------------- */
 
-// Event messages
 void		printWinMessage					(const int numOfSteps);
 void		printLostMessage				(const int numOfSteps);
 void		printBadAlgorithmWarning		(const string & algoName);
@@ -86,7 +77,16 @@ void		printMoreThanOnePlayerCharError	(const string & str);
 void		printMoreThanOneEndCharError	(const string & str);
 void		printWrongCharError				(const string & str);
 
-struct		Errors {
+/* --------------------------- Error enums/struct declarations  --------------------------- */
+
+enum class ErrorType {
+	MaxStepsError, RowsError, ColsError,
+	MissingPlayerChar, MissingEndChar,
+	MoreThanOnePlayerChar, MoreThanOneEndChar,
+	WrongChar
+};
+
+struct Errors {
 	map<ErrorType, Func> fmap = {
 		{ErrorType::MaxStepsError, &printMaxStepsError},
 		{ErrorType::RowsError, &printRowsError},
@@ -101,17 +101,23 @@ struct		Errors {
 	vector<ErrorPair> list;
 };
 
+/* ------------------------------- Parsing helper functions ------------------------------ */
+
 bool		fileExists						(const char* path);
 bool		pathExist						(const char* path);
-char		getMoveChar						(const Move& a);
-void		updateCoordinate				(Coordinate & c, const int i, const int j);
 bool		endsWith						(const string & mainStr, const string & toMatch);
 bool		initPaths						(int argc, char * argv[], vector<string>& paths);
 void		parsePairOfArguments			(char * type, char * path, bool & validArgs, vector<string>& paths,
 											 vector<bool>& pathHasBeenGiven);
 
+/* -------------------------- GameManager play() helper functions ------------------------ */
 
-/* --------------------------- output creation helper functions --------------------------- */
+char		getMoveChar						(const Move& a);
+Move		operator!						(const Move& a);
+void		updateCoordinate				(Coordinate & c, const int i, const int j);
+
+
+/* --------------------- FileHandler createOutput() helper functions --------------------- */
 void		printSeperationRow				(const unsigned int num_of_mazes);
 void		printTitles						(const unsigned int num_of_mazes, const vector<string> & mazeNameVector);
 void		printAlgorithmName				(const string & algoName);

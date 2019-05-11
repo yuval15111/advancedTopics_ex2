@@ -20,15 +20,18 @@ private:
 	/* --------------------------------- MatchManager members --------------------------------- */
 	/* ---------------------------------------------------------------------------------------- */
 
+	// These members contain all the details about the maze.
 	string 								m_name;
 	int 								m_maxSteps, m_rowsNum, m_colsNum;
 	MazeBoard 							m_board;
 	Coordinate 							m_playerLocation;
 	Coordinate							m_endLocation;
 	Coordinate							m_bookmarkVector;
-	vector<string>&						m_algorithmNameVector;
+
+	// These members contain details about the maze solver algoritms and GameManager objects.
 	vector<GameManager>					m_gameManagerVector;
-	vector<MoveList>					m_moveListVector;
+	vector<string>&						m_algorithmNameVector;
+	MatchMoveLists						m_moveListVector;
 
 public:
 
@@ -51,7 +54,7 @@ public:
 	/* ---------------------------- Other helper functions ------------------------------ */
 
 	inline string &						getName				() { return m_name; }
-	inline vector<MoveList>				getMoveListVector	() { return m_moveListVector; }
+	inline MatchMoveLists				getMoveListVector	() { return m_moveListVector; }
 };
 
 
@@ -66,11 +69,27 @@ public:
 
 class AlgorithmRegistrar {
 private:
+
+	/* ---------------------------------------------------------------------------------------- */
+	/* --------------------------- AlgorithmRegistrar members --------------------------------- */
+	/* ---------------------------------------------------------------------------------------- */
+
+	// All of the algorithms will be registered in the static member <instance>'s field <algorithmFactoryVec>.
 	static AlgorithmRegistrar			instance;
 	vector<AlgorithmFactory>			algorithmFactoryVec;
+
+	/* ---------------------------------------------------------------------------------------- */
+	/* ------------------------- AlgorithmRegistrar private functions ------------------------- */
+	/* ---------------------------------------------------------------------------------------- */
+	
 	inline void							registerAlgorithm (AlgorithmFactory algorithmFactory)
 										{ instance.algorithmFactoryVec.push_back(algorithmFactory); }
 public:
+
+	/* ---------------------------------------------------------------------------------------- */
+	/* -------------------------- AlgorithmRegistrar public functions ------------------------- */
+	/* ---------------------------------------------------------------------------------------- */
+
 	friend class						AlgorithmRegistration;
 	inline vector<AlgorithmFactory>&	getAlgoFactoryVec	() { return algorithmFactoryVec; }
 	inline static AlgorithmRegistrar&	getInstance			() { return instance; }

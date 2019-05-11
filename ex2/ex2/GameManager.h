@@ -11,6 +11,7 @@ private:
 	/* ---------------------------------- GameManager members --------------------------------- */
 	/* ---------------------------------------------------------------------------------------- */
 
+	// These members contain all the details about the maze in the eyes of the algorithm.
 	string 										m_name;
 	int 										m_maxSteps, m_rowsNum, m_colsNum;
 	MazeBoard 									m_board;
@@ -18,6 +19,8 @@ private:
 	Coordinate									m_endLocation;
 	map<Coordinate, int>						m_bookmarkMap;
 	int											m_bookmarkCount = 0;
+
+	// This member is a pointer to the algorithm object.
 	unique_ptr<AbstractAlgorithm> 				m_algorithm;
 
 public:
@@ -36,8 +39,8 @@ public:
 
 	/* -------------------------- GameManager main functions ---------------------------- */
 
-	MoveList				play();
-	void					execute(Move a, const bool undo = false);
+	MoveList				play				();
+	void					execute				(Move a, const bool undo = false);
 
 	/* ---------------------------- Other helper functions ------------------------------ */
 

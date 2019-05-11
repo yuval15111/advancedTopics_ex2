@@ -1,7 +1,7 @@
 #include "AlgorithmRegistration.h"
 #include "MatchManager.h"
 
-//registers a new algorithm
+/* This function registers a new algorithm into the registrar. */
 AlgorithmRegistration::AlgorithmRegistration(AlgorithmFactory factoryMethod) {
 	AlgorithmRegistrar::getInstance().registerAlgorithm(factoryMethod);
 }
