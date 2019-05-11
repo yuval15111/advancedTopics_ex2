@@ -132,4 +132,50 @@ bool endsWith(const string & mainStr, const string & toMatch)
 		mainStr.compare(mainStr.size() - toMatch.size(), toMatch.size(), toMatch) == 0;
 }
 
+bool initPaths(int argc, char * argv[], string paths[3], bool pathExists[3]) {
+	bool validArgs = true;
+	switch (argc) {
+	case 7:
+		parsePairOfArguments(argv[5], argv[6], validArgs, paths, pathExists);
+	case 5:
+		parsePairOfArguments(argv[3], argv[4], validArgs, paths, pathExists);
+	case 3:
+		parsePairOfArguments(argv[1], argv[2], validArgs, paths, pathExists);
+	case 1:
+		//init();
+		break;
+	default:
+		validArgs = false;
+		break;
+	}
+	return validArgs;
+	//if (!validArgs) printWrongArgumentsFormatError();
+}
+
+void parsePairOfArguments(char * type, char * path, bool & validArgs, string paths[3], bool pathExists[3]) {
+
+	if (strcmp(type, "-maze_path") == 0) { // .maze folder path
+		if (!pathExists[MAZEPATH_INDEX]) {
+			pathExists[MAZEPATH_INDEX] = true;
+			paths[MAZEPATH_INDEX] = path;
+		}
+		else validArgs = false;
+	}
+	else if (strcmp(type, "-algorithm_path") == 0) { // .so folder path
+		if (!pathExists[ALGOPATH_INDEX]) {
+			pathExists[ALGOPATH_INDEX] = true;
+			paths[ALGOPATH_INDEX] = path;
+		}
+		else validArgs = false;
+	}
+	else if (strcmp(type, "-output") == 0) { // .output folder path
+		if (!pathExists[OUTPUTPATH_INDEX]) {
+			pathExists[OUTPUTPATH_INDEX] = true;
+			paths[OUTPUTPATH_INDEX] = path;
+		}
+		else validArgs = false;
+	}
+	else validArgs = false;
+}
+
 

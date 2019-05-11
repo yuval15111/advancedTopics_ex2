@@ -31,6 +31,10 @@
 #define HITBOOKMARK 2
 #define NUM_OF_STEPS 4
 
+#define MAZEPATH_INDEX 0
+#define ALGOPATH_INDEX 1
+#define OUTPUTPATH_INDEX 2
+
 enum class ErrorType {
 	MaxStepsError, RowsError, ColsError,
 	MissingPlayerChar, MissingEndChar,
@@ -89,6 +93,7 @@ bool fileExists(const char* path);
 char getMoveChar(const Move& a);
 void updateCoordinate(Coordinate & c, const int i, const int j);
 bool endsWith(const string & mainStr, const string & toMatch);
-//void pushLogsToOutputFiles(vector<MatchManager *> matchVector, bool outputPathExists);
+bool initPaths(int argc, char * argv[], string paths[3], bool pathExists[3]);
+void parsePairOfArguments(char * type, char * path, bool & validArgs, string paths[3], bool pathExists[3]);
 
 #endif

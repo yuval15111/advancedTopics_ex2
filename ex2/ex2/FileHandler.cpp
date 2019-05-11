@@ -1,7 +1,6 @@
 #include "FileHandler.h"
 #include <algorithm>
-FileHandler::~FileHandler()
-{
+FileHandler::~FileHandler() {
 	AlgorithmRegistrar::getInstance().clearVector();
 
 	for (MatchManager * mm : m_matchVector)
@@ -12,8 +11,7 @@ FileHandler::~FileHandler()
 }
 
 
-void FileHandler::getMatches()
-{
+void FileHandler::getMatches() {
 	FILE* dl;  // handle to read directory 
 	string command_str = "ls " + m_mazePath + "/*.maze";
 	char in_buf[BUF_SIZE];
@@ -33,7 +31,7 @@ void FileHandler::getMatches()
 		if (!(*fin).is_open()) {
 			exit(EXIT_FAILURE); // TODO: check how to exit
 		}
-		MatchManager * mm = parseInput(fin);
+		MatchManager * mm = parseMaze(fin);
 		delete fin;
 		if (mm == nullptr) {
 			printBadMazeWarning(filename);
@@ -80,8 +78,7 @@ void FileHandler::getAlgorithms() {
 	pclose(dl);
 }
 
-void FileHandler::createOutput()
-{
+void FileHandler::createOutput() {
 	if (m_algorithmNameVector.size() == 0 || m_matchVector.size() == 0) return; // nothing to do here
 
 	unsigned int column_length = 50, num_of_mazes = m_matchVector.size();
@@ -99,7 +96,7 @@ void FileHandler::createOutput()
 	for (unsigned int i = 0; i < column_length; i++) {
 		cout << " ";
 	}
-	
+
 	// rest of the columns - mazes titles
 	for (unsigned int j = 0; j < num_of_mazes; j++) {
 		string & mazeName = m_matchVector[j]->getName();
@@ -143,9 +140,9 @@ void FileHandler::createOutput()
 				}
 				cout << "-1";
 			}
-			
+
 			// output file handling
-			if (m_outputPathExists) {
+			if (outputPathExists()) {
 				string & mazeName = m_matchVector[j]->getName();
 				ofstream fout = ofstream();
 				string path = m_outputPath + "/" + mazeName + "_" + algoName + ".output";
@@ -160,66 +157,18 @@ void FileHandler::createOutput()
 		}
 		cout << "|" << endl;
 	}
-	
+
 	// seperation row
 	for (unsigned int i = 0; i < (column_length + 1) * (num_of_mazes + 1); i++) {
 		cout << "-";
 	}
 	cout << endl;
-
 }
 
-void FileHandler::init() {
-	if (m_invalidArguments) return;
-	getAlgorithms();
-	getMatches();
-	createOutput();
-}
-
-// TODO: Finish method
-void FileHandler::parsePairOfArguments(char * type, char * path) {
-	if (strcmp(type, "-maze_path") == 0) { // .maze folder path
-		if (!m_mazePathExists) {
-			m_mazePathExists = true;
-			m_mazePath = path;
-		}
-		else m_invalidArguments = true;
-	}
-	else if (strcmp(type, "-algorithm_path") == 0) { // .so folder path
-		if (!m_algorithmPathExists) {
-			m_algorithmPathExists = true;
-			m_algorithmPath = path;
-		}
-		else m_invalidArguments = true;
-	}
-	else if (strcmp(type, "-output") == 0) { // .output folder path
-		if (!m_outputPathExists) {
-			m_outputPathExists = true;
-			m_outputPath = path;
-		}
-		else m_invalidArguments = true;
-	}
-	else m_invalidArguments = true;
-}
-
-/*	In the constructor we initialize maze, algorithm output vectors.
-	We also check here validity of the program arguments. */
-FileHandler::FileHandler(int argc, char * argv[]) {
-	switch (argc) {
-	case 7:
-		parsePairOfArguments(argv[5], argv[6]);
-	case 5:
-		parsePairOfArguments(argv[3], argv[4]);
-	case 3:
-		parsePairOfArguments(argv[1], argv[2]);
-	case 1:
-		init();
-		break;
-	default:
-		m_invalidArguments = true;
-		break;
-	}
-	if (m_invalidArguments) printWrongArgumentsFormatError();
+FileHandler::FileHandler(string paths[3]) {
+	m_mazePath = paths[MAZEPATH_INDEX];
+	m_algorithmPath = paths[ALGOPATH_INDEX];
+	m_outputPath = paths[OUTPUTPATH_INDEX];
 }
 
 /*	This function checks if there are errors. If so: updates m_errors.noErrors field to false and prints the errors */
@@ -228,7 +177,6 @@ void FileHandler::checkErrors(void*(titleFunc)) {
 	if (titleFunc != nullptr) { // parsing errors
 		FuncNoArgs f = (FuncNoArgs)titleFunc;
 		f();
-
 		m_errors.no_parsing_Errors = false;
 	}
 	for (ErrorList::iterator it = m_errors.list.begin(); it != m_errors.list.end(); ++it) {
@@ -240,7 +188,7 @@ void FileHandler::checkErrors(void*(titleFunc)) {
 }
 
 /* This function parses the input file and creates the manager object. */
-MatchManager * FileHandler::parseInput(ifstream * fin) {
+MatchManager * FileHandler::parseMaze(ifstream * fin) {
 	m_errors.no_parsing_Errors = true;
 	string line;
 	string name = getName(fin, line);															// Collects maze parameters
@@ -256,8 +204,6 @@ MatchManager * FileHandler::parseInput(ifstream * fin) {
 			return new MatchManager(name, maxSteps, rowsNum, colsNum,
 				board, playerLocation, endLocation, m_algorithmNameVector);
 	}
-
-	cout << "FH - return nullptr in parseInput function. " << endl;
 	return nullptr;
 }
 

@@ -10,30 +10,21 @@
 
 class FileHandler {
 private:
-	bool						m_mazePathExists = false;
-	bool						m_algorithmPathExists = false;
-	bool						m_outputPathExists = false;
-	bool						m_invalidArguments = false;
+	string						m_mazePath = ".";
+	string						m_algorithmPath = ".";
+	string						m_outputPath = ".";
 
 	vector<MatchManager *>		m_matchVector;
 	vector<string>				m_algorithmNameVector;
-	//vector<ofstream>			m_outputVector;
 	vector<vector<char>>		m_outputVector;
-	string						m_algorithmPath = ".";
-	string						m_mazePath = ".";
-	string						m_outputPath = ".";
-	vector<void *>				dlVector;
-	
-	void						init();
-	void						getMatches();
-	void						getAlgorithms();
-	void						createOutput();
-	void						parsePairOfArguments(char * type, char * path);
 
+	vector<void *>				dlVector;
 	Errors						m_errors;
 
 	void						checkErrors(void* (titleFunc));
 	inline void					pushError(ErrorType type, const string & str) { m_errors.list.push_back(ErrorPair(type, str)); }
+
+	MatchManager *				parseMaze(ifstream * fin);
 	string						getName(ifstream * fin, string & line);
 	int							getIntValue(ifstream * fin, const string & input, const ErrorType error, string & line);
 	MazeBoard					getBoard(ifstream * fin, const int rows, const int cols, Coordinate & playerLocation, Coordinate & endLocation, string & line);
@@ -41,12 +32,13 @@ private:
 	void						handleInvalidChar(const char c, const int i, const int j);
 
 public:
-	FileHandler(int argc, char* argv[]);
+	FileHandler(string paths[3]);
 	~FileHandler();
-	MatchManager *				parseInput(ifstream * fin);
+	void						getMatches();
+	void						getAlgorithms();
+	void						createOutput();
 	void						pushActionsToOutputFile(ofstream & fout, vector<char> actions);
-	inline bool					invalidArgs() { return m_invalidArguments; }
-	inline bool					outputPathExists() { return m_outputPathExists; }
+	inline bool					outputPathExists() { return m_outputPath.compare("") != 0; }
 };
 
 #endif
