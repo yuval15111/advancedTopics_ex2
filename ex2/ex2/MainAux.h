@@ -12,6 +12,8 @@
 #include <utility>
 #include <fstream>
 #include <sys/stat.h>
+#include <unistd.h>
+#include <sys/types.h>
 #include <memory>
 #include <stdio.h>
 

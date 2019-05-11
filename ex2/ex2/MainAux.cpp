@@ -106,6 +106,11 @@ bool fileExists(const char* path) {
 	return (stat(path, &buf) == 0);
 }
 
+bool doesPathExist(const char* path) {
+	struct stat statbuf;
+	return (stat(path, &statbuf) != -1 && S_ISDIR(statbuf.st_mode));
+}
+
 char getMoveChar(const Move& a) {
 	switch (a) {
 	case Move::UP:
@@ -154,21 +159,21 @@ bool initPaths(int argc, char * argv[], string paths[3], bool pathExists[3]) {
 
 void parsePairOfArguments(char * type, char * path, bool & validArgs, string paths[3], bool pathExists[3]) {
 
-	if (strcmp(type, "-maze_path") == 0) { // .maze folder path
+	if (strcmp(type, "-maze_path") == 0 && doesPathExist(path)) { // .maze folder path
 		if (!pathExists[MAZEPATH_INDEX]) {
 			pathExists[MAZEPATH_INDEX] = true;
 			paths[MAZEPATH_INDEX] = path;
 		}
 		else validArgs = false;
 	}
-	else if (strcmp(type, "-algorithm_path") == 0) { // .so folder path
+	else if (strcmp(type, "-algorithm_path") == 0 && doesPathExist(path)) { // .so folder path
 		if (!pathExists[ALGOPATH_INDEX]) {
 			pathExists[ALGOPATH_INDEX] = true;
 			paths[ALGOPATH_INDEX] = path;
 		}
 		else validArgs = false;
 	}
-	else if (strcmp(type, "-output") == 0) { // .output folder path
+	else if (strcmp(type, "-output") == 0 && doesPathExist(path)) { // .output folder path
 		if (!pathExists[OUTPUTPATH_INDEX]) {
 			pathExists[OUTPUTPATH_INDEX] = true;
 			paths[OUTPUTPATH_INDEX] = path;

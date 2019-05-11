@@ -80,7 +80,7 @@ void FileHandler::getAlgorithms() {
 void FileHandler::createOutput() {
 	if (m_algorithmNameVector.size() == 0 || m_matchVector.size() == 0) return; // nothing to do here
 
-	unsigned int column_length = 50, num_of_mazes = m_matchVector.size();
+	unsigned int column_length = 25, num_of_mazes = m_matchVector.size();
 
 	// seperation row
 	for (unsigned int i = 0; i < (column_length + 1) * (num_of_mazes + 1); i++) {
