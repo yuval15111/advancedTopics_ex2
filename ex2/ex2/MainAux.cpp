@@ -30,17 +30,17 @@ void printWrongArgumentsFormatError()
 	cout << "Wrong format arguments" << endl;
 }
 
-void printBadAlgorithmWarning(string algoName)
+void printBadAlgorithmWarning(const string & algoName)
 {
 	cout << "Warning: " << algoName << " is invalid." << endl;
 }
 
-void printBadMazeWarning(string mazeName)
+void printBadMazeWarning(const string & mazeName)
 {
 	cout << "Warning: " << mazeName << " is invalid." << endl;
 }
 
-void printStreamError(string filename) {
+void printStreamError(const string & filename) {
 	cout << "Could not open " << filename << "." << endl;
 }
 
@@ -193,5 +193,99 @@ void parsePairOfArguments(char * type, char * path, bool & validArgs, vector<str
 
 
 
+/* --------------------------- output creation helper functions --------------------------- */
 
+/*	A helper function for FileHandler::createOutput().
+	params: an integer <num_of_mazes>.
+	This function prints a seperation row for the output table. */
+void printSeperationRow(const unsigned int num_of_mazes) {
+	for (unsigned int i = 0; i < (TABLE_COLUMN_LENGTH + 1) * (num_of_mazes + 1); i++)
+		cout << "-";
+	cout << endl;
+}
+
+/*	A helper function for FileHandler::createOutput().
+	params: an integer <num_of_mazes>.
+	This function prints a title for the output table, filled with all the mazes names. */
+void printTitles(const unsigned int num_of_mazes, const vector<string>& mazeNameVector) {
+	cout << "|";
+	for (unsigned int i = 0; i < TABLE_COLUMN_LENGTH; i++)
+		cout << " ";
+	for (unsigned int j = 0; j < num_of_mazes; j++) {
+		cout << "|" << mazeNameVector[j];
+		for (unsigned int i = 0; i < TABLE_COLUMN_LENGTH - mazeNameVector[j].length(); i++)
+			cout << " ";
+	}
+	cout << "|" << endl;
+}
+
+/*	A helper function for FileHandler::createOutput().
+	params: an algorithm name <algoName>.
+	This function algoName at every row beginning in the output table. */
+void printAlgorithmName(const string & algoName) {
+	cout << "|" << algoName;
+	for (unsigned int j = 0; j < TABLE_COLUMN_LENGTH - algoName.length(); j++) {
+		cout << " ";
+	}
+}
+
+/*	A helper function for FileHandler::createOutput().
+	params: an integer <num_of_mazes>, an algorithm index <algoIndex> and an algorithm name <algoName>.
+	This function prints a line of the results for algoName running on each maze in the output table,
+	and creates an output file for each maze (if outputPath exists). */
+void printAlgorithmResultOnAllMazes(const string & path, const unsigned int num_of_mazes, const unsigned int algoIndex,
+									const string & algoName, const vector<MatchMoveLists> & allMatchesMoveLists,
+									const vector<string> & mazeNameVector) {
+	for (unsigned int j = 0; j < num_of_mazes; j++) {
+		MoveList lst = allMatchesMoveLists[j][algoIndex];
+		cout << "|";
+		if (lst[lst.size() - 1] == '!') {
+			string str = to_string(lst.size() - 1);
+			for (unsigned int k = 0; k < TABLE_COLUMN_LENGTH - str.length(); k++)
+				cout << " ";
+			cout << str;
+		}
+		else {
+			for (unsigned int k = 0; k < TABLE_COLUMN_LENGTH - 2; k++)
+				cout << " ";
+			cout << "-1";
+		}
+		// output file handling
+		if (outputPathExists(path)) createOutputFile(path, algoName, mazeNameVector[j], lst);
+	}
+	cout << "|" << endl;
+}
+
+/*	A helper function for printAlgorithmResultOnAllMazes().
+	params: an algorithm name, a maze name and a move list.
+	This function creates an ofstream and pushes the move chars into it. */
+void createOutputFile(const string& path, const string & algoName, const string & mazeName, const MoveList& moveList) {
+	ofstream fout = ofstream();
+	string filename = getAvaliableFileName(path, algoName, mazeName);
+	fout.open(filename);
+	if (!fout.is_open()) {
+		printStreamError(filename);
+		return;
+	}
+	pushMovesToOutputFile(fout, moveList);
+	fout.close();
+}
+
+/*	A helper function for createOutputFile().
+	params: an open ofstream and a vector of game moves.
+	This function pushes the move chars into the output stream. */
+void pushMovesToOutputFile(ofstream & fout, const MoveList& moveList) {
+	for (const char & c : moveList)
+		fout << c << endl;
+}
+
+string getAvaliableFileName(const string& path, const string & algoName, const string & mazeName) {
+	string filename = path + "/" + mazeName + "_" + algoName + ".output";
+	int count = 1;
+	while (fileExists(filename.c_str())) {
+		filename = path + "/" + mazeName + "_" + algoName + "(" + to_string(count) + ").output";
+		count++;
+	}
+	return filename;
+}
 

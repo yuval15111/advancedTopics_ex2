@@ -16,6 +16,7 @@
 #include <sys/types.h>
 #include <memory>
 #include <stdio.h>
+#include <functional>
 
 #include "AbstractAlgorithm.h"
 
@@ -39,6 +40,8 @@
 #define ALGOPATH_INDEX 1
 #define OUTPUTPATH_INDEX 2
 
+#define TABLE_COLUMN_LENGTH 30
+
 enum class ErrorType {
 	MaxStepsError, RowsError, ColsError,
 	MissingPlayerChar, MissingEndChar,
@@ -55,32 +58,35 @@ using AlgorithmPair = pair<string, void*>; // the name of the algorithm and the 
 using OutputPair = pair<string, ofstream&>; // the name of the output file and the stream
 using ErrorPair = pair<ErrorType, string>;
 using ErrorList = vector<ErrorPair>;
+using AlgorithmFactory = function<unique_ptr<AbstractAlgorithm>()>;
+using MoveList = vector<char>;
+using MatchMoveLists = vector<MoveList>;
 typedef void(*Func) (const string & str);
 typedef void(*FuncNoArgs) ();
 typedef AbstractAlgorithm::Move Move;
 
-Move operator!(const Move& a);
+Move		operator!						(const Move& a);
 
 // Event messages
-void printWinMessage(const int numOfSteps);
-void printLostMessage(const int numOfSteps);
-void printBadAlgorithmWarning(string algoName);
-void printBadMazeWarning(string mazeName);
-void printStreamError(string filename);
-void printPopenError();
-void printWrongArgumentsFormatError();
-void printHeaderErrorTitle();
-void printMazeErrorTitle();
-void printMaxStepsError(const string & str);
-void printRowsError(const string & str);
-void printColsError(const string & str);
-void printMissingPlayerCharError(const string & str);
-void printMissingEndCharError(const string & str);
-void printMoreThanOnePlayerCharError(const string & str);
-void printMoreThanOneEndCharError(const string & str);
-void printWrongCharError(const string & str);
+void		printWinMessage					(const int numOfSteps);
+void		printLostMessage				(const int numOfSteps);
+void		printBadAlgorithmWarning		(const string & algoName);
+void		printBadMazeWarning				(const string & mazeName);
+void		printStreamError				(const string & filename);
+void		printPopenError					();
+void		printWrongArgumentsFormatError	();
+void		printHeaderErrorTitle			();
+void		printMazeErrorTitle				();
+void		printMaxStepsError				(const string & str);
+void		printRowsError					(const string & str);
+void		printColsError					(const string & str);
+void		printMissingPlayerCharError		(const string & str);
+void		printMissingEndCharError		(const string & str);
+void		printMoreThanOnePlayerCharError	(const string & str);
+void		printMoreThanOneEndCharError	(const string & str);
+void		printWrongCharError				(const string & str);
 
-struct Errors {
+struct		Errors {
 	map<ErrorType, Func> fmap = {
 		{ErrorType::MaxStepsError, &printMaxStepsError},
 		{ErrorType::RowsError, &printRowsError},
@@ -95,14 +101,28 @@ struct Errors {
 	vector<ErrorPair> list;
 };
 
-bool fileExists(const char* path);
-bool pathExist(const char* path);
-char getMoveChar(const Move& a);
-void updateCoordinate(Coordinate & c, const int i, const int j);
-bool endsWith(const string & mainStr, const string & toMatch);
-bool initPaths(int argc, char * argv[], vector<string>& paths);
-void parsePairOfArguments(char * type, char * path, bool & validArgs, vector<string>& paths, vector<bool>& pathHasBeenGiven);
+bool		fileExists						(const char* path);
+bool		pathExist						(const char* path);
+char		getMoveChar						(const Move& a);
+void		updateCoordinate				(Coordinate & c, const int i, const int j);
+bool		endsWith						(const string & mainStr, const string & toMatch);
+bool		initPaths						(int argc, char * argv[], vector<string>& paths);
+void		parsePairOfArguments			(char * type, char * path, bool & validArgs, vector<string>& paths,
+											 vector<bool>& pathHasBeenGiven);
 
+
+/* --------------------------- output creation helper functions --------------------------- */
+void		printSeperationRow				(const unsigned int num_of_mazes);
+void		printTitles						(const unsigned int num_of_mazes, const vector<string> & mazeNameVector);
+void		printAlgorithmName				(const string & algoName);
+void		printAlgorithmResultOnAllMazes	(const string & path, const unsigned int num_of_mazes, const unsigned int algoIndex,
+											 const string & algoName, const vector<MatchMoveLists> & allMatchesMoveLists,
+											 const vector<string> & mazeNameVector);
+inline bool	outputPathExists				(const string & path) { return path.compare("") != 0; }
+void		createOutputFile				(const string & path, const string & algoName, const string & mazeName,
+											 const MoveList & moveList);
+string		getAvaliableFileName			(const string & path, const string & algoName, const string & mazeName);
+void		pushMovesToOutputFile			(ofstream & fout, const MoveList& moveList);
 
 
 #endif

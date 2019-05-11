@@ -1,6 +1,8 @@
 #include "FileHandler.h"
 #include <algorithm>
 
+/* -------------- maze and so files searching and reading functions ----------------- */
+
 FILE * FileHandler::execCmd(const char * cmd) {
 	FILE * dl = popen(cmd, "r");
 	if (!dl) {
@@ -18,27 +20,6 @@ ifstream * FileHandler::openIFstream(const char * filename) {
 	}
 	return fin;
 }
-
-void FileHandler::generateMatchesFromMazeFiles(FILE * dl) {
-	char in_buf[BUF_SIZE];
-	while (fgets(in_buf, BUF_SIZE, dl)) {
-		// trim off the whitespace
-		char* ws = strpbrk(in_buf, " \t\n");
-		if (ws) *ws = '\0';
-		string filename(in_buf);
-		ifstream *fin = openIFstream(filename.c_str());
-		MatchManager * mm = parseMaze(fin);
-		(*fin).close();
-		delete fin;
-		if (mm == nullptr) {
-			printBadMazeWarning(filename);
-			continue; // bad maze - keep looking for other mazes
-		}
-		mm->createGameManagers();
-		m_matchVector.push_back(mm);
-	}
-}
-
 
 void FileHandler::generateAlgorithmsFromSoFiles(FILE * dl) {
 	void* dlib;
@@ -62,128 +43,47 @@ void FileHandler::generateAlgorithmsFromSoFiles(FILE * dl) {
 	}
 }
 
-/* --------------------------- output creation helper functions --------------------------- */
-
-/*	A helper function for createOutput().
-	params: an integer <num_of_mazes>.
-	This function prints a seperation row for the output table. */
-void FileHandler::printSeperationRow(unsigned int num_of_mazes) {
-	for (unsigned int i = 0; i < (COLUMN_LENGTH + 1) * (num_of_mazes + 1); i++)
-		cout << "-";
-	cout << endl;
-}
-
-/*	A helper function for createOutput().
-	params: an integer <num_of_mazes>.
-	This function prints a title for the output table, filled with all the mazes names. */
-void FileHandler::printTitles(unsigned int num_of_mazes) {
-	// first column - algorithms title
-	cout << "|";
-	for (unsigned int i = 0; i < COLUMN_LENGTH; i++)
-		cout << " ";
-
-	// rest of the columns - mazes titles
-	for (unsigned int j = 0; j < num_of_mazes; j++) {
-		string & mazeName = m_matchVector[j]->getName();
-		cout << "|" << mazeName;
-		for (unsigned int i = 0; i < COLUMN_LENGTH - mazeName.length(); i++) {
-			cout << " ";
+void FileHandler::generateMatchesFromMazeFiles(FILE * dl) {
+	char in_buf[BUF_SIZE];
+	while (fgets(in_buf, BUF_SIZE, dl)) {
+		// trim off the whitespace
+		char* ws = strpbrk(in_buf, " \t\n");
+		if (ws) *ws = '\0';
+		string filename(in_buf);
+		ifstream *fin = openIFstream(filename.c_str());
+		MatchManager * mm = parseMaze(fin);
+		(*fin).close();
+		delete fin;
+		if (mm == nullptr) {
+			printBadMazeWarning(filename);
+			continue; // bad maze - keep looking for other mazes
 		}
-	}
-	cout << "|" << endl;
-}
-
-/*	A helper function for createOutput().
-	params: an algorithm name <algoName>.
-	This function algoName at every row beginning in the output table. */
-void FileHandler::printAlgorithmName(string & algoName)
-{
-	cout << "|" << algoName;
-	for (unsigned int j = 0; j < COLUMN_LENGTH - algoName.length(); j++) {
-		cout << " ";
+		mm->createGameManagers();
+		m_matchVector.push_back(mm);
 	}
 }
 
-/*	A helper function for createOutput().
-	params: an integer <num_of_mazes>, a MatchManager index <i> and an algorithm name <algoName>.
-	This function prints a line of the results for algoName running on each maze in the output table,
-	and creates an output file for each maze (if outputPath exists). */
-void FileHandler::printAlgorithmResultOnAllMazes(unsigned int num_of_mazes, unsigned int i, string & algoName) {
-	for (unsigned int j = 0; j < num_of_mazes; j++) {
-		vector<vector<char>> moveListVector = m_matchVector[j]->getMoveListVector();
-		cout << "|";
-		if (moveListVector[i][moveListVector[i].size() - 1] == '!') {
-			string str = to_string(moveListVector[i].size() - 1);
-			for (unsigned int k = 0; k < COLUMN_LENGTH - str.length(); k++)
-				cout << " ";
-			cout << str;
-		}
-		else {
-			for (unsigned int k = 0; k < COLUMN_LENGTH - 2; k++)
-				cout << " ";
-			cout << "-1";
-		}
-
-		// output file handling
-		if (outputPathExists()) {
-			string & mazeName = m_matchVector[j]->getName();
-			createOutputFile(algoName, mazeName, moveListVector[i]);
-		}
-	}
-	cout << "|" << endl;
-}
-
-/*	A helper function for printAlgorithmResultOnAllMazes().
-	params: an algorithm name, a maze name and a move list.
-	This function creates an ofstream and pushes the move chars into it. */
-void FileHandler::createOutputFile(string & algoName, string & mazeName, vector<char>& moveList) {
-	ofstream fout = ofstream();
-	string filename = getAvaliableFileName(algoName, mazeName);
-	fout.open(filename);
-	if (!fout.is_open()) {
-		printStreamError(filename);
-		return;
-	}
-	pushMovesToOutputFile(fout, moveList);
-	fout.close();
-}
-
-/*	A helper function for createOutputFile().
-	params: an open ofstream and a vector of game moves.
-	This function pushes the move chars into the output stream. */
-void FileHandler::pushMovesToOutputFile(ofstream & fout, vector<char>& moveList) {
-	for (const char & c : moveList)
-		fout << c << endl;
-}
-
-string FileHandler::getAvaliableFileName(string & algoName, string & mazeName) {
-	string filename = m_outputPath + "/" + mazeName + "_" + algoName + ".output";
-	int count = 1;
-	while (fileExists(filename.c_str())) {
-		filename = m_outputPath + "/" + mazeName + "_" + algoName + "(" + to_string(count) + ").output";
-		count++;
-	}
-	return filename;
-}
+/* ------------------------------ maze parsing functions ---------------------------- */
 
 
-/* --------------------------------- maze parsing functions ------------------------------- */
-
-
-/* This function parses the input file and creates the manager object. */
+/*	This is the main parsing function, which parses an input stream
+	and creates the MatchManager object. */
 MatchManager * FileHandler::parseMaze(ifstream * fin) {
 	m_errors.no_parsing_Errors = true;
 	string line;
-	string name = getName(fin, line);															// Collects maze parameters
+	// Collect maze parameters
+	string name = getName(fin, line);
 	int maxSteps = getIntValue(fin, MAXSTEPS, ErrorType::MaxStepsError, line);
 	int rowsNum = getIntValue(fin, ROWS, ErrorType::RowsError, line);
 	int colsNum = getIntValue(fin, COLS, ErrorType::ColsError, line);
+	// Check errors in lines 2-4
 	checkErrors((void*)printHeaderErrorTitle);
-	if (m_errors.no_parsing_Errors) {														// No errors, lines 2-4 are valid.
+	if (m_errors.no_parsing_Errors) {	// No errors, lines 2-4 are valid.
 		Coordinate playerLocation, endLocation;
+		// Collect other maze properties
 		MazeBoard board = getBoard(fin, rowsNum, colsNum, playerLocation, endLocation, line);
 		checkErrors((void*)printMazeErrorTitle);
-		if (m_errors.no_parsing_Errors)							// No errors, maze file is valid - creates a Manager object
+		if (m_errors.no_parsing_Errors)	// No errors, maze file is valid - creates a MatchManager object
 			return new MatchManager(name, maxSteps, rowsNum, colsNum,
 				board, playerLocation, endLocation, m_algorithmNameVector);
 	}
@@ -295,6 +195,22 @@ void FileHandler::checkErrors(void*(titleFunc)) {
 	m_errors.list.clear();
 }
 
+/* -------------------------------- other helper functions -------------------------------- */
+
+vector<string> FileHandler::getMazeNamesVector() {
+	vector<string> vec;
+	for (unsigned int i = 0; i < m_matchVector.size(); i++)
+		vec.emplace_back(m_matchVector[i]->getName());
+	return vec;
+}
+
+vector<MatchMoveLists> FileHandler::getAllMatchesMoveLists() {
+	vector<MatchMoveLists> vec;
+	for (unsigned int i = 0; i < m_matchVector.size(); i++)
+		vec.emplace_back(m_matchVector[i]->getMoveListVector());
+	return vec;
+}
+
 /* ---------------------------------------------------------------------------------------- */
 /* ----------------------------- File Handler public functions ---------------------------- */
 /* ---------------------------------------------------------------------------------------- */
@@ -329,18 +245,22 @@ void FileHandler::getMatchesAndPlay() {
 	pclose(dl);
 }
 
+/*	This function is responsible for writing the output table to the screen, and, if 
+	an output path is given by user, creating an output files. */
 void FileHandler::createOutput() {
 	if (m_algorithmNameVector.size() == 0 || m_matchVector.size() == 0) return; // nothing to do here
+	vector<string> mazeNamesVec = getMazeNamesVector();
 	unsigned int num_of_mazes = m_matchVector.size();
 	printSeperationRow(num_of_mazes);
-	printTitles(num_of_mazes);
+	printTitles(num_of_mazes, mazeNamesVec);
 
 	// information rows
 	for (unsigned int i = 0; i < m_algorithmNameVector.size(); i++) {
 		printSeperationRow(num_of_mazes);
 		string & algoName = m_algorithmNameVector[i];
 		printAlgorithmName(algoName);
-		printAlgorithmResultOnAllMazes(num_of_mazes, i, algoName);
+		printAlgorithmResultOnAllMazes(m_outputPath, num_of_mazes, i, algoName, getAllMatchesMoveLists(), mazeNamesVec);
+	
 	}
 	printSeperationRow(num_of_mazes);
 }

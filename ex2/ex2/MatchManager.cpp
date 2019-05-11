@@ -1,6 +1,10 @@
 #include "MatchManager.h"
 #include "AlgorithmRegistration.h"
 
+/* -------------------------- GameManager main functions ---------------------------- */
+
+/*	This function creates a GameManager obj for each factoryMethod in the registrar,
+	and runs all games using their algorithms instantly. */
 void MatchManager::createGameManagers()
 {
 	AlgorithmRegistrar registrar = AlgorithmRegistrar::getInstance();

@@ -4,49 +4,76 @@
 #include "AlgorithmRegistration.h"
 #include "GameManager.h"
 #include <vector>
-#include <functional>
 #include <cassert>
 using namespace std;
 
+/* ------------------------------------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------------------------------- */
+/* -------------------------------------- MatchManager class --------------------------------------- */
+/* ------------------------------------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------------------------------- */
+
 class MatchManager {
 private:
-	string 					m_name;
-	int 					m_maxSteps, m_rowsNum, m_colsNum;
-	MazeBoard 				m_board;
-	Coordinate 				m_playerLocation;
-	Coordinate				m_endLocation;
-	Coordinate				m_bookmarkVector;
-	vector<string>&			m_algorithmNameVector;
-	vector<GameManager>		m_gameManagerVector;
-	vector<vector<char>>	m_moveListVector;
+
+	/* ---------------------------------------------------------------------------------------- */
+	/* --------------------------------- MatchManager members --------------------------------- */
+	/* ---------------------------------------------------------------------------------------- */
+
+	string 								m_name;
+	int 								m_maxSteps, m_rowsNum, m_colsNum;
+	MazeBoard 							m_board;
+	Coordinate 							m_playerLocation;
+	Coordinate							m_endLocation;
+	Coordinate							m_bookmarkVector;
+	vector<string>&						m_algorithmNameVector;
+	vector<GameManager>					m_gameManagerVector;
+	vector<MoveList>					m_moveListVector;
 
 public:
+
+	/* ---------------------------------------------------------------------------------------- */
+	/* ----------------------------- MatchManager public functions ---------------------------- */
+	/* ---------------------------------------------------------------------------------------- */
+
+	/* ------------------------------------- c'tor -------------------------------------- */
+
 	MatchManager(string name, int maxSteps, int rowsNum, int colsNum,
 		MazeBoard board, Coordinate playerLocation, Coordinate endLocation, vector<string> & algoNameVec) :
 		m_name(name), m_maxSteps(maxSteps), m_rowsNum(rowsNum),
 		m_colsNum(colsNum), m_board(board), m_playerLocation(playerLocation),
 		m_endLocation(endLocation), m_bookmarkVector(playerLocation), m_algorithmNameVector(algoNameVec) {};
-	void createGameManagers();
-	inline string & getName() { return m_name; }
-	inline int algorithmsCount() { return m_algorithmNameVector.size(); }
-	inline vector<vector<char>> getMoveListVector() { return m_moveListVector; }
+
+	/* -------------------------- GameManager main functions ---------------------------- */
+
+	void								createGameManagers	();
+
+	/* ---------------------------- Other helper functions ------------------------------ */
+
+	inline string &						getName				() { return m_name; }
+	inline vector<MoveList>				getMoveListVector	() { return m_moveListVector; }
 };
+
+
+
+
+
+/* ------------------------------------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------------------------------- */
+/* ----------------------------------- AlgorithmRegistrar class ------------------------------------ */
+/* ------------------------------------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------------------------------- */
 
 class AlgorithmRegistrar {
 private:
-	static AlgorithmRegistrar instance;
-	vector<function<unique_ptr<AbstractAlgorithm>()>> algorithmFactoryVec;
-	inline void registerAlgorithm(std::function<unique_ptr<AbstractAlgorithm>()> algorithmFactory) {
-		instance.algorithmFactoryVec.push_back(algorithmFactory);
-	}
+	static AlgorithmRegistrar			instance;
+	vector<AlgorithmFactory>			algorithmFactoryVec;
+	inline void							registerAlgorithm (AlgorithmFactory algorithmFactory)
+										{ instance.algorithmFactoryVec.push_back(algorithmFactory); }
 public:
-	friend class AlgorithmRegistration;
-	vector<function<unique_ptr<AbstractAlgorithm>()>>& getAlgoFactoryVec() {
-		return algorithmFactoryVec;
-	}
-	static AlgorithmRegistrar& getInstance() {
-		return instance;
-	}
-	inline void clearVector() { algorithmFactoryVec.clear(); }
+	friend class						AlgorithmRegistration;
+	inline vector<AlgorithmFactory>&	getAlgoFactoryVec	() { return algorithmFactoryVec; }
+	inline static AlgorithmRegistrar&	getInstance			() { return instance; }
+	inline void							clearVector			() { algorithmFactoryVec.clear(); }
 };
 #endif
