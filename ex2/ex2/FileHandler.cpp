@@ -16,6 +16,7 @@ FILE * FileHandler::execCmd(const char * cmd) {
 		printPopenError();
 		return NULL;
 	}
+	return dl;
 }
 
 ifstream * FileHandler::openIFstream(const char * filename) {
