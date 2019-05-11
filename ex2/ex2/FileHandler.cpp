@@ -56,7 +56,6 @@ void FileHandler::getAlgorithms() {
 	}
 	void* dlib;
 
-	int c = 0;
 	while (fgets(in_buf, BUF_SIZE, dl)) {
 		// trim off the whitespace 
 		char* ws = strpbrk(in_buf, " \t\n");
