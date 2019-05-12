@@ -42,6 +42,15 @@
 
 #define TABLE_COLUMN_LENGTH 30
 
+/* ------------------------------ ErrorType enum declaration  ----------------------------- */
+
+enum class ErrorType {
+	MaxStepsError, RowsError, ColsError,
+	MissingPlayerChar, MissingEndChar,
+	MoreThanOnePlayerChar, MoreThanOneEndChar,
+	WrongChar
+};
+
 /* ---------------------------- typedefs/using for readability ---------------------------- */
 
 using namespace std;
@@ -77,14 +86,7 @@ void		printMoreThanOnePlayerCharError	(const string & str);
 void		printMoreThanOneEndCharError	(const string & str);
 void		printWrongCharError				(const string & str);
 
-/* --------------------------- Error enums/struct declarations  --------------------------- */
-
-enum class ErrorType {
-	MaxStepsError, RowsError, ColsError,
-	MissingPlayerChar, MissingEndChar,
-	MoreThanOnePlayerChar, MoreThanOneEndChar,
-	WrongChar
-};
+/* ------------------------------ Error struct declaration  ------------------------------ */
 
 struct Errors {
 	map<ErrorType, Func> fmap = {
