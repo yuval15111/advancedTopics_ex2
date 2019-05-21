@@ -13,18 +13,6 @@ FILE * FileHandler::execCmd(const char * cmd) {
 	return dl;
 }
 
-/* This function opens an ifstream for a maze file to be read. */
-unique_ptr<ifstream> FileHandler::openIFstream(const char * filename) {
-	unique_ptr<ifstream> fin = make_unique<ifstream>(filename);
-	cout << "made fin successfully" << endl;
-	if (!(*fin).is_open()) {
-		printStreamError(filename);
-		return nullptr;
-	}
-	cout << "return fin: " << endl;
-	return fin;
-}
-
 /*	This function iterates over a list of .so files in the correct format
 	in a pipe <dl>, and parses them into algorithms. */
 void FileHandler::generateAlgorithmsFromSoFiles(FILE * dl) {
@@ -59,18 +47,22 @@ void FileHandler::generateMatchesFromMazeFiles(FILE * dl) {
 		if (ws) *ws = '\0';
 		string filename(in_buf);
 		cout << "fin begin: " << endl;
-		unique_ptr<ifstream> fin = openIFstream(filename.c_str());
-		cout << "mm begin using move(fin): " << endl;
-		unique_ptr<MatchManager> mm = parseMaze(move(fin));
-		(*fin).close();
-		if (mm == nullptr) {
-			printBadMazeWarning(filename);
-			continue; // bad maze - keep looking for other mazes
+		ifstream fin(filename.c_str());
+		cout << "made fin successfully" << endl;
+		if (!fin.is_open()) printStreamError(filename);
+		else {
+			cout << "mm begin using move(fin): " << endl;
+			unique_ptr<MatchManager> mm = parseMaze(fin);
+			fin.close();
+			if (mm == nullptr) {
+				printBadMazeWarning(filename);
+				continue; // bad maze - keep looking for other mazes
+			}
+			cout << "mm gameManager creation begin: " << endl;
+			mm->createGameManagers();
+			cout << "mm putting in matchVector begin: " << endl;
+			m_matchVector.emplace_back(move(mm));
 		}
-		cout << "mm gameManager creation begin: " << endl;
-		mm->createGameManagers();
-		cout << "mm putting in matchVector begin: " << endl;
-		m_matchVector.emplace_back(move(mm));
 	}
 }
 
@@ -79,17 +71,17 @@ void FileHandler::generateMatchesFromMazeFiles(FILE * dl) {
 
 /*	This is the maze parsing function, which parses an input stream
 	and creates a MatchManager object. */
-unique_ptr<MatchManager> FileHandler::parseMaze(unique_ptr<ifstream> fin) {
+unique_ptr<MatchManager> FileHandler::parseMaze(ifstream& fin) {
 	m_errors.no_parsing_Errors = true;
 	string line;
 
 	// Collect maze parameters:
 	cout << "getname: " << endl;
-	string name = getName(move(fin), line);
+	string name = getName(fin, line);
 	cout << "getintvalue: " << endl;
-	int maxSteps = getIntValue(move(fin), MAXSTEPS, ErrorType::MaxStepsError, line);
-	int rowsNum = getIntValue(move(fin), ROWS, ErrorType::RowsError, line);
-	int colsNum = getIntValue(move(fin), COLS, ErrorType::ColsError, line);
+	int maxSteps = getIntValue(fin, MAXSTEPS, ErrorType::MaxStepsError, line);
+	int rowsNum = getIntValue(fin, ROWS, ErrorType::RowsError, line);
+	int colsNum = getIntValue(fin, COLS, ErrorType::ColsError, line);
 
 	// Check errors in lines 2-4:
 	checkErrors((void*)printHeaderErrorTitle);
@@ -98,7 +90,7 @@ unique_ptr<MatchManager> FileHandler::parseMaze(unique_ptr<ifstream> fin) {
 		Coordinate playerLocation, endLocation;
 		// Collect other maze properties
 		cout << "getboard: " << endl;
-		MazeBoard board = getBoard(move(fin), rowsNum, colsNum, playerLocation, endLocation, line);
+		MazeBoard board = getBoard(fin, rowsNum, colsNum, playerLocation, endLocation, line);
 
 		// Check errors in the maze itself:
 		checkErrors((void*)printMazeErrorTitle);
@@ -113,8 +105,8 @@ unique_ptr<MatchManager> FileHandler::parseMaze(unique_ptr<ifstream> fin) {
 
 /*	A helper function for parseMaze().
 	This function retrieves the name of the maze. */
-string FileHandler::getName(unique_ptr<ifstream> fin, string & line) {
-	if (getline(*fin, line)) {
+string FileHandler::getName(ifstream& fin, string & line) {
+	if (getline(fin, line)) {
 		cout << "line: " << line << endl;
 		return line;
 	}
@@ -123,12 +115,12 @@ string FileHandler::getName(unique_ptr<ifstream> fin, string & line) {
 
 /*	A helper function for parseMaze().
 	This function retrieves the integer value from lines 2-4. */
-int FileHandler::getIntValue(unique_ptr<ifstream> fin, const string & input, const ErrorType error, string & line) {
+int FileHandler::getIntValue(ifstream& fin, const string & input, const ErrorType error, string & line) {
 	const regex reg("\\s*" + input + "\\s*=\\s*[1-9][0-9]*\\s*$");
 
 	const regex numReg("[1-9][0-9]*");
 	smatch match;
-	if (getline(*fin, line)) {
+	if (getline(fin, line)) {
 		cout << "line: " << line << endl;
 		if (!regex_match(line, reg)) {
 			pushError(error, line);
@@ -146,7 +138,7 @@ int FileHandler::getIntValue(unique_ptr<ifstream> fin, const string & input, con
 			references to playerLocation and endLocation that will be filled in this function;
 			refernce to line string which we fill with lines from the input and parse the file with.
 	return: A maze board object (two-dimensional character vector) */
-MazeBoard FileHandler::getBoard(unique_ptr<ifstream> fin, const int rows, const int cols, Coordinate & playerLocation, Coordinate & endLocation, string & line) {
+MazeBoard FileHandler::getBoard(ifstream& fin, const int rows, const int cols, Coordinate & playerLocation, Coordinate & endLocation, string & line) {
 	MazeBoard board;
 	bool seenPlayerChar = false, seenEndChar = false;
 	for (int i = 0; i < rows; i++) {
