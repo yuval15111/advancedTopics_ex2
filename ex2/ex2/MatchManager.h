@@ -101,9 +101,8 @@ public:
 
 	friend class						AlgorithmRegistration;
 	inline vector<AlgorithmFactory>&	getAlgoFactoryVec	() { return algorithmFactoryVec; }
-	inline void							fillStack() {
-											for (auto& a : algorithmFactoryVec) { algorithmFactoryStack.push(a); }
-										}
+	inline void							fillStack			()
+										{ for (auto& a : algorithmFactoryVec) { algorithmFactoryStack.push(a); } }
 	inline stack<AlgorithmFactory>&		getAlgoFactoryStack() { return algorithmFactoryStack; }
 	inline static AlgorithmRegistrar&	getInstance			() { return instance; }
 	inline void							clearVector			() { algorithmFactoryVec.clear(); }

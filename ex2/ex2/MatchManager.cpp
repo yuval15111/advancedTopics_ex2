@@ -28,20 +28,23 @@ void MatchManager::threadFunc() {
 	cout << "MM: inside some threadFunc()" << endl;
 	while (true) {
 		AlgorithmRegistrar registrar = AlgorithmRegistrar::getInstance();
+		auto stack = registrar.getAlgoFactoryStack();
+		cout << "MM: stack size before: " << stack.size() << endl;
 		auto algorithm = getAlgorithmFromStack();
-		if (algorithm == nullptr) return; // No more algorithms in the stack
+		cout << "MM: stack size after: " << stack.size() << endl;
+		if (algorithm == nullptr) { 
+			cout << "MM: end of some threadFunc() - empty stack" << endl;
+			return; // No more algorithms in the stack
+		} 
 		m_moveListVector.push_back(GameManager(m_name, m_maxSteps, m_rowsNum, m_colsNum, m_board,
 						 m_playerLocation, m_endLocation, move(algorithm())).play());
 	}
-	cout << "MM: end of some threadFunc()" << endl;
 }
 
 AlgorithmFactory MatchManager::getAlgorithmFromStack()
 {
-	cout << "MM: beginning of getAlgorithmFromStack()" << endl;
-	m_mtx.lock();
 	AlgorithmRegistrar registrar = AlgorithmRegistrar::getInstance();
-
+	m_mtx.lock();
 	auto algorithmStack = registrar.getAlgoFactoryStack();
 	if (algorithmStack.empty()) { 
 		m_mtx.unlock();
