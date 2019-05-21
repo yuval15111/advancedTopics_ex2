@@ -30,7 +30,7 @@ void MatchManager::threadFunc() {
 		AlgorithmRegistrar registrar = AlgorithmRegistrar::getInstance();
 		auto& stack = registrar.getAlgoFactoryStack();
 		cout << "MM: stack size before: " << stack.size() << endl;
-		auto& algorithm = getAlgorithmFromStack();
+		auto algorithm = getAlgorithmFromStack();
 		cout << "MM: stack size after: " << stack.size() << endl;
 		if (algorithm == nullptr) { 
 			cout << "MM: end of some threadFunc() - empty stack" << endl;
