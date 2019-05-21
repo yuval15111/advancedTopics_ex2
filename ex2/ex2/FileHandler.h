@@ -54,8 +54,8 @@ private:
 																{ m_errors.list.push_back(ErrorPair(type, str)); }
 
 	/* ----------------------------- other helper functions ----------------------------- */
-	vector<string>			getMazeNamesVector				();
-	vector<MatchMoveLists>	getAllMatchesMoveLists			();
+	vector<string>					getMazeNamesVector		();
+	vector<map<string, MoveList>>getAllMatchesMoveListMaps();
 
 	/* ---------------------------------------------------------------------------------------- */
 	/* ----------------------------- File Handler public functions ---------------------------- */

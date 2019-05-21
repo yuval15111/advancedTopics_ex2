@@ -46,21 +46,16 @@ void FileHandler::generateMatchesFromMazeFiles(FILE * dl) {
 		char* ws = strpbrk(in_buf, " \t\n");
 		if (ws) *ws = '\0';
 		string filename(in_buf);
-		cout << "fin begin: " << endl;
 		ifstream fin(filename.c_str());
-		cout << "made fin successfully" << endl;
 		if (!fin.is_open()) printStreamError(filename);
 		else {
-			cout << "mm begin using move(fin): " << endl;
 			unique_ptr<MatchManager> mm = parseMaze(fin);
 			fin.close();
 			if (mm == nullptr) {
 				printBadMazeWarning(filename);
 				continue; // bad maze - keep looking for other mazes
 			}
-			cout << "mm gameManager creation begin: " << endl;
 			mm->createGameManagers();
-			cout << "mm putting in matchVector begin: " << endl;
 			m_matchVector.emplace_back(move(mm));
 		}
 	}
@@ -76,9 +71,7 @@ unique_ptr<MatchManager> FileHandler::parseMaze(ifstream& fin) {
 	string line;
 
 	// Collect maze parameters:
-	cout << "getname: " << endl;
 	string name = getName(fin, line);
-	cout << "getintvalue: " << endl;
 	int maxSteps = getIntValue(fin, MAXSTEPS, ErrorType::MaxStepsError, line);
 	int rowsNum = getIntValue(fin, ROWS, ErrorType::RowsError, line);
 	int colsNum = getIntValue(fin, COLS, ErrorType::ColsError, line);
@@ -89,12 +82,10 @@ unique_ptr<MatchManager> FileHandler::parseMaze(ifstream& fin) {
 	if (m_errors.no_parsing_Errors) {	// No errors, lines 2-4 are valid.
 		Coordinate playerLocation, endLocation;
 		// Collect other maze properties
-		cout << "getboard: " << endl;
 		MazeBoard board = getBoard(fin, rowsNum, colsNum, playerLocation, endLocation, line);
 
 		// Check errors in the maze itself:
 		checkErrors((void*)printMazeErrorTitle);
-		cout << "return mm begin: " << endl;
 		if (m_errors.no_parsing_Errors)	// No errors, maze file is valid - creates a MatchManager object
 			return make_unique<MatchManager>(name, maxSteps, rowsNum, colsNum,
 				board, playerLocation, endLocation, m_algorithmNameVector, m_numOfThreads);
@@ -143,7 +134,7 @@ MazeBoard FileHandler::getBoard(ifstream& fin, const int rows, const int cols, C
 	bool seenPlayerChar = false, seenEndChar = false;
 	for (int i = 0; i < rows; i++) {
 		MazeRow row;
-		if (getline(*fin, line)) {											// Succeeded reading a line - fills MazeRow according to line
+		if (getline(fin, line)) {											// Succeeded reading a line - fills MazeRow according to line
 			for (int j = 0; j < min(cols, (int)line.length()); j++) {
 				if (line[j] == PLAYER_CHAR)
 					handleSpecialChar(PLAYER_CHAR, playerLocation, i, j, seenPlayerChar, line, ErrorType::MoreThanOnePlayerChar);
@@ -221,10 +212,10 @@ vector<string> FileHandler::getMazeNamesVector() {
 }
 
 /* This function retrieves a vector of all the mazes' MoveLists objects. */
-vector<MatchMoveLists> FileHandler::getAllMatchesMoveLists() {
-	vector<MatchMoveLists> vec;
+vector<map<string, MoveList>> FileHandler::getAllMatchesMoveListMaps() {
+	vector<map<string, MoveList>> vec;
 	for (unsigned int i = 0; i < m_matchVector.size(); i++)
-		vec.emplace_back(m_matchVector[i]->getMoveListVector());
+		vec.emplace_back(m_matchVector[i]->getMoveListMap());
 	return vec;
 }
 
@@ -270,12 +261,10 @@ void FileHandler::createOutput() {
 	printTitles(num_of_mazes, mazeNamesVec); // Table title
 
 	// Informative table rows:
-	for (unsigned int i = 0; i < m_algorithmNameVector.size(); i++) {
+	for (string & algoName : m_algorithmNameVector) {
 		printSeperationRow(num_of_mazes);
-		string & algoName = m_algorithmNameVector[i];
 		printAlgorithmName(algoName);
-		printAlgorithmResultOnAllMazes(m_outputPath, num_of_mazes, i, algoName, getAllMatchesMoveLists(), mazeNamesVec);
-	
+		printAlgorithmResultOnAllMazes(m_outputPath, num_of_mazes, algoName, getAllMatchesMoveListMaps(), mazeNamesVec);
 	}
 	printSeperationRow(num_of_mazes);
 }

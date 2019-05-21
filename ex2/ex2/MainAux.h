@@ -127,8 +127,8 @@ void		updateCoordinate				(Coordinate & c, const int i, const int j);
 void		printSeperationRow				(const unsigned int num_of_mazes);
 void		printTitles						(const unsigned int num_of_mazes, const vector<string> & mazeNameVector);
 void		printAlgorithmName				(const string & algoName);
-void		printAlgorithmResultOnAllMazes	(const string & path, const unsigned int num_of_mazes, const unsigned int algoIndex,
-											 const string & algoName, const vector<MatchMoveLists> & allMatchesMoveLists,
+void		printAlgorithmResultOnAllMazes	(const string & path, const unsigned int num_of_mazes,
+											 const string & algoName, const vector<map<string, MoveList>> & allMatchesMoveLists,
 											 const vector<string> & mazeNameVector);
 inline bool	outputPathExists				(const string & path) { return path.compare("") != 0; }
 void		createOutputFile				(const string & path, const string & algoName, const string & mazeName,

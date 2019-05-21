@@ -265,11 +265,12 @@ void printAlgorithmName(const string & algoName) {
 	params: an integer <num_of_mazes>, an algorithm index <algoIndex> and an algorithm name <algoName>.
 	This function prints a line of the results for algoName running on each maze in the output table,
 	and creates an output file for each maze (if outputPath exists). */
-void printAlgorithmResultOnAllMazes(const string & path, const unsigned int num_of_mazes, const unsigned int algoIndex,
-									const string & algoName, const vector<MatchMoveLists> & allMatchesMoveLists,
+void printAlgorithmResultOnAllMazes(const string & path, const unsigned int num_of_mazes,
+									const string & algoName, const vector<map<string, MoveList>> & allMatchesMoveListMaps,
 									const vector<string> & mazeNameVector) {
 	for (unsigned int j = 0; j < num_of_mazes; j++) {
-		MoveList lst = allMatchesMoveLists[j][algoIndex];
+		map<string, MoveList> map = allMatchesMoveListMaps[j];
+		MoveList lst = map[algoName];
 		cout << "|";
 		if (lst[lst.size() - 1] == '!') {
 			string str = to_string(lst.size() - 1);
