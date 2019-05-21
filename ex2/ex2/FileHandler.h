@@ -55,7 +55,7 @@ private:
 
 	/* ----------------------------- other helper functions ----------------------------- */
 	vector<string>					getMazeNamesVector		();
-	vector<map<string, MoveList>>getAllMatchesMoveListMaps();
+	vector<map<string, MoveList>>	getAllMatchesMoveListMaps();
 
 	/* ---------------------------------------------------------------------------------------- */
 	/* ----------------------------- File Handler public functions ---------------------------- */
