@@ -25,28 +25,27 @@ void MatchManager::threadFunc() {
 		AlgorithmRegistrar registrar = AlgorithmRegistrar::getInstance();
 		auto algorithm = getAlgorithmFromStack();
 		if (algorithm == nullptr) return; // No more algorithms in the stack
-		moveListVector.push_back(GameManager(m_name, m_maxSteps, m_rowsNum, m_colsNum, m_board,
+		m_moveListVector.push_back(GameManager(m_name, m_maxSteps, m_rowsNum, m_colsNum, m_board,
 						 m_playerLocation, m_endLocation, move(algorithm())).play());
 	}
 }
 
-MatchMoveLists MatchManager::getMoveListVector() {
-	return moveListVector;
-}
-
 AlgorithmFactory MatchManager::getAlgorithmFromStack()
 {
-	lock_guard<mutex> guard(mtx);
+	m_mtx.lock();
 	AlgorithmRegistrar registrar = AlgorithmRegistrar::getInstance();
 
 	auto algorithmStack = registrar.getAlgoFactoryStack();
-	if (algorithmStack.empty()) return nullptr;
+	if (algorithmStack.empty()) { 
+		m_mtx.unlock();
+		return nullptr;
+	}
 
 	AlgorithmFactory a = algorithmStack.top();
 	algorithmStack.pop();
+	m_mtx.unlock();
 	return a;
 }
 
 AlgorithmRegistrar AlgorithmRegistrar::instance;
-mutex mtx;
-MatchMoveLists moveListVector;
+//mutex mtx;

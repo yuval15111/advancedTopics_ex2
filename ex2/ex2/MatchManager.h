@@ -31,8 +31,11 @@ private:
 	// These members contain details about the maze solver algoritms and GameManager objects.
 	vector<GameManager>					m_gameManagerVector;
 	vector<string>&						m_algorithmNameVector;
-	//MatchMoveLists					m_moveListVector;
+	MatchMoveLists						m_moveListVector;
 	const int							m_numOfThreads;
+
+	// this is a mutex object used for 
+	mutex								m_mtx;
 
 public:
 
@@ -56,7 +59,7 @@ public:
 	/* ---------------------------- Other helper functions ------------------------------ */
 
 	inline string &						getName					() { return m_name; }
-	MatchMoveLists						getMoveListVector		();
+	inline MatchMoveLists				getMoveListVector		() { return m_moveListVector; }
 	AlgorithmFactory					getAlgorithmFromStack	();
 };
 
