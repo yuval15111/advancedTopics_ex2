@@ -9,6 +9,7 @@ int main(int argc, char* argv[]) {
 		printWrongArgumentsFormatError();
 		return -1;
 	}
+	cout << "num_threads: " << arguments[3] << endl;
 	FileHandler fh(arguments);						// We create a FileHandler object to parse everything needed:
 	fh.getAlgorithms();								// Finding all the algorithms in [algorithm_path]
 	fh.getMatchesAndPlay();							// Finding all the mazes in [maze_path] and solve them using the algorithms
