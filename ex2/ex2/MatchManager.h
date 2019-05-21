@@ -29,7 +29,7 @@ private:
 	Coordinate							m_bookmarkVector;
 
 	// These members contain details about the maze solver algoritms and GameManager objects.
-	stack<GameManager>					m_gameManagerStack;
+	stack<pair<string, AlgorithmFactory>> m_AlgorithmStack;
 	vector<string>&						m_algorithmNameVector;
 	MatchMoveLists						m_moveListVector;
 	const int							m_numOfThreads;
@@ -61,6 +61,8 @@ public:
 	inline string &						getName					() { return m_name; }
 	inline MatchMoveLists				getMoveListVector		() { return m_moveListVector; }
 	AlgorithmFactory					getAlgorithmFromStack	();
+	void								fillStack();
+	
 };
 
 

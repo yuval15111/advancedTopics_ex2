@@ -9,7 +9,8 @@
 void MatchManager::createGameManagers() {
 	vector<thread> threadVector;
 	cout << "MM: fillStack()" << endl;
-	AlgorithmRegistrar::getInstance().fillStack();
+	//AlgorithmRegistrar::getInstance().fillStack();
+	fillStack();
 	cout << "MM: fillStack() end" << endl;
 	cout << "MM: beginning of createGameManagers()" << endl;
 	for (int i = 0; i < m_numOfThreads - 1; i++) {
@@ -27,11 +28,9 @@ void MatchManager::createGameManagers() {
 void MatchManager::threadFunc() {
 	cout << "MM: inside some threadFunc()" << endl;
 	while (true) {
-		AlgorithmRegistrar registrar = AlgorithmRegistrar::getInstance();
-		auto& stack = registrar.getAlgoFactoryStack();
-		cout << "MM: stack size before: " << stack.size() << endl;
+		cout << "MM: stack size before: " << m_AlgorithmStack.size() << endl;
 		auto algorithm = getAlgorithmFromStack();
-		cout << "MM: stack size after: " << stack.size() << endl;
+		cout << "MM: stack size after: " << m_AlgorithmStack.size() << endl;
 		if (algorithm == nullptr) { 
 			cout << "MM: end of some threadFunc() - empty stack" << endl;
 			return; // No more algorithms in the stack
@@ -41,22 +40,24 @@ void MatchManager::threadFunc() {
 	}
 }
 
-AlgorithmFactory MatchManager::getAlgorithmFromStack()
-{
-	AlgorithmRegistrar registrar = AlgorithmRegistrar::getInstance();
+AlgorithmFactory MatchManager::getAlgorithmFromStack() {
 	m_mtx.lock();
-	auto& algorithmStack = registrar.getAlgoFactoryStack();
-	if (algorithmStack.empty()) { 
+	if (m_AlgorithmStack.empty()) {
 		m_mtx.unlock();
 		cout << "MM: end of getAlgorithmFromStack() - empty" << endl;
 		return nullptr;
 	}
-
-	AlgorithmFactory a = algorithmStack.top();
-	algorithmStack.pop();
+	AlgorithmFactory a = m_AlgorithmStack.top().second;
+	m_AlgorithmStack.pop();
 	m_mtx.unlock();
 	cout << "MM: end of getAlgorithmFromStack()" << endl;
 	return a;
+}
+
+void MatchManager::fillStack() {
+	AlgorithmRegistrar registrar = AlgorithmRegistrar::getInstance();
+	vector<AlgorithmFactory>& vec = registrar.getAlgoFactoryVec();
+	for (auto& a : vec) m_AlgorithmStack.push(make_pair("fdsgdfgv",a)); // TODO: change string
 }
 
 AlgorithmRegistrar AlgorithmRegistrar::instance;
