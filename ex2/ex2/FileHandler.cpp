@@ -14,8 +14,8 @@ FILE * FileHandler::execCmd(const char * cmd) {
 }
 
 /* This function opens an ifstream for a maze file to be read. */
-ifstream * FileHandler::openIFstream(const char * filename) {
-	ifstream *fin = new ifstream(filename);
+unique_ptr<ifstream> FileHandler::openIFstream(const char * filename) {
+	unique_ptr<ifstream> fin = make_unique<ifstream>(filename);
 	if (!(*fin).is_open()) {
 		printStreamError(filename);
 		return nullptr;
@@ -56,16 +56,15 @@ void FileHandler::generateMatchesFromMazeFiles(FILE * dl) {
 		char* ws = strpbrk(in_buf, " \t\n");
 		if (ws) *ws = '\0';
 		string filename(in_buf);
-		ifstream *fin = openIFstream(filename.c_str());
-		MatchManager * mm = parseMaze(fin);
+		unique_ptr<ifstream> fin = openIFstream(filename.c_str());
+		unique_ptr<MatchManager> mm = parseMaze(move(fin));
 		(*fin).close();
-		delete fin;
 		if (mm == nullptr) {
 			printBadMazeWarning(filename);
 			continue; // bad maze - keep looking for other mazes
 		}
 		mm->createGameManagers();
-		m_matchVector.push_back(mm);
+		m_matchVector.emplace_back(move(mm));
 	}
 }
 
@@ -74,15 +73,15 @@ void FileHandler::generateMatchesFromMazeFiles(FILE * dl) {
 
 /*	This is the maze parsing function, which parses an input stream
 	and creates a MatchManager object. */
-MatchManager * FileHandler::parseMaze(ifstream * fin) {
+unique_ptr<MatchManager> FileHandler::parseMaze(unique_ptr<ifstream> fin) {
 	m_errors.no_parsing_Errors = true;
 	string line;
 
 	// Collect maze parameters:
-	string name = getName(fin, line);
-	int maxSteps = getIntValue(fin, MAXSTEPS, ErrorType::MaxStepsError, line);
-	int rowsNum = getIntValue(fin, ROWS, ErrorType::RowsError, line);
-	int colsNum = getIntValue(fin, COLS, ErrorType::ColsError, line);
+	string name = getName(move(fin), line);
+	int maxSteps = getIntValue(move(fin), MAXSTEPS, ErrorType::MaxStepsError, line);
+	int rowsNum = getIntValue(move(fin), ROWS, ErrorType::RowsError, line);
+	int colsNum = getIntValue(move(fin), COLS, ErrorType::ColsError, line);
 
 	// Check errors in lines 2-4:
 	checkErrors((void*)printHeaderErrorTitle);
@@ -90,13 +89,13 @@ MatchManager * FileHandler::parseMaze(ifstream * fin) {
 	if (m_errors.no_parsing_Errors) {	// No errors, lines 2-4 are valid.
 		Coordinate playerLocation, endLocation;
 		// Collect other maze properties
-		MazeBoard board = getBoard(fin, rowsNum, colsNum, playerLocation, endLocation, line);
+		MazeBoard board = getBoard(move(fin), rowsNum, colsNum, playerLocation, endLocation, line);
 
 		// Check errors in the maze itself:
 		checkErrors((void*)printMazeErrorTitle);
 
 		if (m_errors.no_parsing_Errors)	// No errors, maze file is valid - creates a MatchManager object
-			return new MatchManager(name, maxSteps, rowsNum, colsNum,
+			return make_unique<MatchManager>(name, maxSteps, rowsNum, colsNum,
 				board, playerLocation, endLocation, m_algorithmNameVector, m_numOfThreads);
 	}
 
@@ -105,7 +104,7 @@ MatchManager * FileHandler::parseMaze(ifstream * fin) {
 
 /*	A helper function for parseMaze().
 	This function retrieves the name of the maze. */
-string FileHandler::getName(ifstream * fin, string & line) {
+string FileHandler::getName(unique_ptr<ifstream> fin, string & line) {
 	if (getline(*fin, line)) {
 		return line;
 	}
@@ -114,7 +113,7 @@ string FileHandler::getName(ifstream * fin, string & line) {
 
 /*	A helper function for parseMaze().
 	This function retrieves the integer value from lines 2-4. */
-int FileHandler::getIntValue(ifstream * fin, const string & input, const ErrorType error, string & line) {
+int FileHandler::getIntValue(unique_ptr<ifstream> fin, const string & input, const ErrorType error, string & line) {
 	const regex reg("\\s*" + input + "\\s*=\\s*[1-9][0-9]*\\s*$");
 
 	const regex numReg("[1-9][0-9]*");
@@ -136,7 +135,7 @@ int FileHandler::getIntValue(ifstream * fin, const string & input, const ErrorTy
 			references to playerLocation and endLocation that will be filled in this function;
 			refernce to line string which we fill with lines from the input and parse the file with.
 	return: A maze board object (two-dimensional character vector) */
-MazeBoard FileHandler::getBoard(ifstream * fin, const int rows, const int cols, Coordinate & playerLocation, Coordinate & endLocation, string & line) {
+MazeBoard FileHandler::getBoard(unique_ptr<ifstream> fin, const int rows, const int cols, Coordinate & playerLocation, Coordinate & endLocation, string & line) {
 	MazeBoard board;
 	bool seenPlayerChar = false, seenEndChar = false;
 	for (int i = 0; i < rows; i++) {
@@ -234,8 +233,6 @@ vector<MatchMoveLists> FileHandler::getAllMatchesMoveLists() {
 	has allocated during its life: factoryMethods, MatchManagers and dls. */
 FileHandler::~FileHandler() {
 	AlgorithmRegistrar::getInstance().clearVector();	// factoryMethod deletion
-	for (MatchManager * mm : m_matchVector)
-		if (mm != nullptr) delete mm;					// MatchManagers deletion
 	for (void * dl : m_dlVector)
 		if (dl != NULL)	dlclose(dl);					// dl objects deletion
 }

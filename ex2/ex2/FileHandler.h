@@ -21,7 +21,7 @@ private:
 	const int				m_numOfThreads;
 
 	// match, algorithm and dl vectors
-	vector<MatchManager *>	m_matchVector;
+	vector<unique_ptr<MatchManager>> m_matchVector;
 	vector<string>			m_algorithmNameVector;
 	vector<void *>			m_dlVector;
 
@@ -34,16 +34,16 @@ private:
 	
 	/* -------------- maze and so files searching and reading functions ----------------- */
 	FILE *					execCmd							(const char * cmd);
-	ifstream *				openIFstream					(const char * filename);
+	unique_ptr<ifstream>	openIFstream					(const char * filename);
 	void					generateAlgorithmsFromSoFiles	(FILE * dl);
 	void					generateMatchesFromMazeFiles	(FILE * dl);
 
 	/* ------------------------------ maze parsing functions ---------------------------- */
-	MatchManager *			parseMaze						(ifstream * fin);
-	string					getName							(ifstream * fin, string & line);
-	int						getIntValue						(ifstream * fin, const string & input,
+	unique_ptr<MatchManager>parseMaze						(unique_ptr<ifstream> fin);
+	string					getName							(unique_ptr<ifstream> fin, string & line);
+	int						getIntValue						(unique_ptr<ifstream> fin, const string & input,
 															 const ErrorType error, string & line);
-	MazeBoard				getBoard						(ifstream * fin, const int rows, const int cols,
+	MazeBoard				getBoard						(unique_ptr<ifstream> fin, const int rows, const int cols,
 															 Coordinate & playerLocation, Coordinate & endLocation,
 															 string & line);
 	void					handleSpecialChar				(const char c, Coordinate & location,
