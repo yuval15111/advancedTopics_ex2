@@ -28,9 +28,9 @@ void MatchManager::threadFunc() {
 	cout << "MM: inside some threadFunc()" << endl;
 	while (true) {
 		AlgorithmRegistrar registrar = AlgorithmRegistrar::getInstance();
-		auto stack = registrar.getAlgoFactoryStack();
+		auto& stack = registrar.getAlgoFactoryStack();
 		cout << "MM: stack size before: " << stack.size() << endl;
-		auto algorithm = getAlgorithmFromStack();
+		auto& algorithm = getAlgorithmFromStack();
 		cout << "MM: stack size after: " << stack.size() << endl;
 		if (algorithm == nullptr) { 
 			cout << "MM: end of some threadFunc() - empty stack" << endl;
@@ -45,7 +45,7 @@ AlgorithmFactory MatchManager::getAlgorithmFromStack()
 {
 	AlgorithmRegistrar registrar = AlgorithmRegistrar::getInstance();
 	m_mtx.lock();
-	auto algorithmStack = registrar.getAlgoFactoryStack();
+	auto& algorithmStack = registrar.getAlgoFactoryStack();
 	if (algorithmStack.empty()) { 
 		m_mtx.unlock();
 		cout << "MM: end of getAlgorithmFromStack() - empty" << endl;
