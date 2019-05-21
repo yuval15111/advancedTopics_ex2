@@ -26,7 +26,7 @@ void MatchManager::createGameManagers() {
 }
 
 void MatchManager::threadFunc() {
-	cout << "MM: inside some threadFunc()" << endl;
+	cout << "MM: inside some threadFunc(). id = " << this_thread::get_id() << endl;
 	while (true) {
 		cout << "MM: stack size before: " << m_AlgorithmStack.size() << endl;
 		auto algorithm = getAlgorithmFromStack();
