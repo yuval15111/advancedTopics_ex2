@@ -115,6 +115,7 @@ unique_ptr<MatchManager> FileHandler::parseMaze(unique_ptr<ifstream> fin) {
 	This function retrieves the name of the maze. */
 string FileHandler::getName(unique_ptr<ifstream> fin, string & line) {
 	if (getline(*fin, line)) {
+		cout << "line: " << line << endl;
 		return line;
 	}
 	return nullptr;
@@ -128,6 +129,7 @@ int FileHandler::getIntValue(unique_ptr<ifstream> fin, const string & input, con
 	const regex numReg("[1-9][0-9]*");
 	smatch match;
 	if (getline(*fin, line)) {
+		cout << "line: " << line << endl;
 		if (!regex_match(line, reg)) {
 			pushError(error, line);
 			return -1;
