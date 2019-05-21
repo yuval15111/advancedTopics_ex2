@@ -16,10 +16,12 @@ FILE * FileHandler::execCmd(const char * cmd) {
 /* This function opens an ifstream for a maze file to be read. */
 unique_ptr<ifstream> FileHandler::openIFstream(const char * filename) {
 	unique_ptr<ifstream> fin = make_unique<ifstream>(filename);
+	cout << "made fin successfully" << endl;
 	if (!(*fin).is_open()) {
 		printStreamError(filename);
 		return nullptr;
 	}
+	cout << "return fin: " << endl;
 	return fin;
 }
 
@@ -56,14 +58,18 @@ void FileHandler::generateMatchesFromMazeFiles(FILE * dl) {
 		char* ws = strpbrk(in_buf, " \t\n");
 		if (ws) *ws = '\0';
 		string filename(in_buf);
+		cout << "fin begin: " << endl;
 		unique_ptr<ifstream> fin = openIFstream(filename.c_str());
+		cout << "mm begin using move(fin): " << endl;
 		unique_ptr<MatchManager> mm = parseMaze(move(fin));
 		(*fin).close();
 		if (mm == nullptr) {
 			printBadMazeWarning(filename);
 			continue; // bad maze - keep looking for other mazes
 		}
+		cout << "mm gameManager creation begin: " << endl;
 		mm->createGameManagers();
+		cout << "mm putting in matchVector begin: " << endl;
 		m_matchVector.emplace_back(move(mm));
 	}
 }
@@ -93,7 +99,7 @@ unique_ptr<MatchManager> FileHandler::parseMaze(unique_ptr<ifstream> fin) {
 
 		// Check errors in the maze itself:
 		checkErrors((void*)printMazeErrorTitle);
-
+		cout << "return mm begin: " << endl;
 		if (m_errors.no_parsing_Errors)	// No errors, maze file is valid - creates a MatchManager object
 			return make_unique<MatchManager>(name, maxSteps, rowsNum, colsNum,
 				board, playerLocation, endLocation, m_algorithmNameVector, m_numOfThreads);
