@@ -84,7 +84,9 @@ unique_ptr<MatchManager> FileHandler::parseMaze(unique_ptr<ifstream> fin) {
 	string line;
 
 	// Collect maze parameters:
+	cout << "getname: " << endl;
 	string name = getName(move(fin), line);
+	cout << "getintvalue: " << endl;
 	int maxSteps = getIntValue(move(fin), MAXSTEPS, ErrorType::MaxStepsError, line);
 	int rowsNum = getIntValue(move(fin), ROWS, ErrorType::RowsError, line);
 	int colsNum = getIntValue(move(fin), COLS, ErrorType::ColsError, line);
@@ -95,6 +97,7 @@ unique_ptr<MatchManager> FileHandler::parseMaze(unique_ptr<ifstream> fin) {
 	if (m_errors.no_parsing_Errors) {	// No errors, lines 2-4 are valid.
 		Coordinate playerLocation, endLocation;
 		// Collect other maze properties
+		cout << "getboard: " << endl;
 		MazeBoard board = getBoard(move(fin), rowsNum, colsNum, playerLocation, endLocation, line);
 
 		// Check errors in the maze itself:
