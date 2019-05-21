@@ -89,10 +89,10 @@ private:
 	/* ------------------------- AlgorithmRegistrar private functions ------------------------- */
 	/* ---------------------------------------------------------------------------------------- */
 	
-	/*inline void							registerAlgorithm (AlgorithmFactory algorithmFactory)
-										{ instance.algorithmFactoryVec.push_back(algorithmFactory); }*/
-	inline void							registerAlgorithm(AlgorithmFactory algorithmFactory)
-										{ instance.algorithmFactoryStack.push(algorithmFactory); }
+	inline void							registerAlgorithm (AlgorithmFactory algorithmFactory)
+										{ instance.algorithmFactoryVec.push_back(algorithmFactory); }
+	/*inline void							registerAlgorithm(AlgorithmFactory algorithmFactory)
+										{ instance.algorithmFactoryStack.push(algorithmFactory); }*/
 public:
 
 	/* ---------------------------------------------------------------------------------------- */
@@ -101,6 +101,9 @@ public:
 
 	friend class						AlgorithmRegistration;
 	inline vector<AlgorithmFactory>&	getAlgoFactoryVec	() { return algorithmFactoryVec; }
+	inline void							fillStack() {
+											for (auto& a : algorithmFactoryVec) { algorithmFactoryStack.push(a); }
+										}
 	inline stack<AlgorithmFactory>&		getAlgoFactoryStack() { return algorithmFactoryStack; }
 	inline static AlgorithmRegistrar&	getInstance			() { return instance; }
 	inline void							clearVector			() { algorithmFactoryVec.clear(); }

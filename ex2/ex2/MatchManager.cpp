@@ -8,6 +8,9 @@
 	Afterwards, the returned value (a MoveList object) is pushed to the instance MoveListVector. */
 void MatchManager::createGameManagers() {
 	vector<thread> threadVector;
+	cout << "MM: fillStack()" << endl;
+	AlgorithmRegistrar::getInstance().fillStack();
+	cout << "MM: fillStack() end" << endl;
 	cout << "MM: beginning of createGameManagers()" << endl;
 	for (int i = 0; i < m_numOfThreads - 1; i++) {
 		threadVector.emplace_back(thread(&MatchManager::threadFunc, this)); // TODO: ", this" ?
@@ -42,7 +45,7 @@ AlgorithmFactory MatchManager::getAlgorithmFromStack()
 	auto algorithmStack = registrar.getAlgoFactoryStack();
 	if (algorithmStack.empty()) { 
 		m_mtx.unlock();
-		cout << "MM: end of getAlgorithmFromStack()" << endl;
+		cout << "MM: end of getAlgorithmFromStack() - empty" << endl;
 		return nullptr;
 	}
 
