@@ -123,6 +123,7 @@ bool endsWith(const string & mainStr, const string & toMatch)
 /*	This function fills <argVec> string vector with the entered arguments,
 	and returns true iff the program's arguments are valid according to the guidelines. */
 bool initArgumentVector(int argc, char * argv[], vector<string>& argVec) {
+	cout << "initArgumentVector begin: " << endl;
 	vector<bool> argHasBeenGiven = { false, false, false };
 	bool validArgs = true;
 	switch (argc) {
@@ -140,6 +141,7 @@ bool initArgumentVector(int argc, char * argv[], vector<string>& argVec) {
 		validArgs = false;
 		break;
 	}
+	cout << "initArgumentVector end. validArgs: " << validArgs << endl;
 	return validArgs;
 }
 
