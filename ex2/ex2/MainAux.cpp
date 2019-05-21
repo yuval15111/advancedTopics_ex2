@@ -120,18 +120,20 @@ bool endsWith(const string & mainStr, const string & toMatch)
 		mainStr.compare(mainStr.size() - toMatch.size(), toMatch.size(), toMatch) == 0;
 }
 
-/*	This function fills <paths> string vector with the paths entered in the arguments,
+/*	This function fills <argVec> string vector with the entered arguments,
 	and returns true iff the program's arguments are valid according to the guidelines. */
-bool initPaths(int argc, char * argv[], vector<string>& paths) {
-	vector<bool> pathHasBeenGiven = { false, false, false };
+bool initArgumentVector(int argc, char * argv[], vector<string>& argVec) {
+	vector<bool> argHasBeenGiven = { false, false, false };
 	bool validArgs = true;
 	switch (argc) {
+	case 9:
+		parsePairOfArguments(argv[7], argv[8], validArgs, argVec, argHasBeenGiven);
 	case 7:
-		parsePairOfArguments(argv[5], argv[6], validArgs, paths, pathHasBeenGiven);
+		parsePairOfArguments(argv[5], argv[6], validArgs, argVec, argHasBeenGiven);
 	case 5:
-		parsePairOfArguments(argv[3], argv[4], validArgs, paths, pathHasBeenGiven);
+		parsePairOfArguments(argv[3], argv[4], validArgs, argVec, argHasBeenGiven);
 	case 3:
-		parsePairOfArguments(argv[1], argv[2], validArgs, paths, pathHasBeenGiven);
+		parsePairOfArguments(argv[1], argv[2], validArgs, argVec, argHasBeenGiven);
 	case 1:
 		break;
 	default:
@@ -141,29 +143,36 @@ bool initPaths(int argc, char * argv[], vector<string>& paths) {
 	return validArgs;
 }
 
-/*	This function indicates what is <path> are according to the guidelines:
-	A maze path, an algorithm path ot an output path.
-	Accordingly, it puts <path> in it's right position in <paths> vector.  */
-void parsePairOfArguments(char * type, char * path, bool & validArgs, vector<string>& paths, vector<bool>& pathHasBeenGiven) {
+/*	This function indicates what is <arg> are according to the guidelines:
+	A maze path, an algorithm path, an output path or an integer indicates #threads.
+	Accordingly, it puts <arg> in it's right position in <argVec> vector.  */
+void parsePairOfArguments(char * argType, char * arg, bool & validArgs, vector<string>& argVec, vector<bool>& argHasBeenGiven) {
 
-	if (strcmp(type, "-maze_path") == 0 && pathExist(path)) { // .maze folder path
-		if (!pathHasBeenGiven[MAZEPATH_INDEX]) {
-			pathHasBeenGiven[MAZEPATH_INDEX] = true;
-			paths[MAZEPATH_INDEX] = path;
+	if (strcmp(argType, "-maze_path") == 0 && pathExist(arg)) { // .maze folder path
+		if (!argHasBeenGiven[MAZEPATH_INDEX]) {
+			argHasBeenGiven[MAZEPATH_INDEX] = true;
+			argVec[MAZEPATH_INDEX] = arg;
 		}
 		else validArgs = false;
 	}
-	else if (strcmp(type, "-algorithm_path") == 0 && pathExist(path)) { // .so folder path
-		if (!pathHasBeenGiven[ALGOPATH_INDEX]) {
-			pathHasBeenGiven[ALGOPATH_INDEX] = true;
-			paths[ALGOPATH_INDEX] = path;
+	else if (strcmp(argType, "-algorithm_path") == 0 && pathExist(arg)) { // .so folder path
+		if (!argHasBeenGiven[ALGOPATH_INDEX]) {
+			argHasBeenGiven[ALGOPATH_INDEX] = true;
+			argVec[ALGOPATH_INDEX] = arg;
 		}
 		else validArgs = false;
 	}
-	else if (strcmp(type, "-output") == 0 && pathExist(path)) { // .output folder path
-		if (!pathHasBeenGiven[OUTPUTPATH_INDEX]) {
-			pathHasBeenGiven[OUTPUTPATH_INDEX] = true;
-			paths[OUTPUTPATH_INDEX] = path;
+	else if (strcmp(argType, "-output") == 0 && pathExist(arg)) { // .output folder path
+		if (!argHasBeenGiven[OUTPUTPATH_INDEX]) {
+			argHasBeenGiven[OUTPUTPATH_INDEX] = true;
+			argVec[OUTPUTPATH_INDEX] = arg;
+		}
+		else validArgs = false;
+	}
+	else if (strcmp(argType, "-num_threads") == 0 && atoi(arg) != 0) { // .output folder path
+		if (!argHasBeenGiven[NUMTHREADS_INDEX]) {
+			argHasBeenGiven[NUMTHREADS_INDEX] = true;
+			argVec[NUMTHREADS_INDEX] = arg;
 		}
 		else validArgs = false;
 	}

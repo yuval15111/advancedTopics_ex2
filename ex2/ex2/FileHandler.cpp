@@ -97,7 +97,7 @@ MatchManager * FileHandler::parseMaze(ifstream * fin) {
 
 		if (m_errors.no_parsing_Errors)	// No errors, maze file is valid - creates a MatchManager object
 			return new MatchManager(name, maxSteps, rowsNum, colsNum,
-				board, playerLocation, endLocation, m_algorithmNameVector);
+				board, playerLocation, endLocation, m_algorithmNameVector, m_numOfThreads);
 	}
 
 	return nullptr;

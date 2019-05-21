@@ -17,6 +17,9 @@
 #include <memory>
 #include <stdio.h>
 #include <functional>
+#include <thread>
+#include <mutex>
+#include <atomic> // TODO: is necessary?
 
 #include "AbstractAlgorithm.h"
 
@@ -39,6 +42,7 @@
 #define MAZEPATH_INDEX 0
 #define ALGOPATH_INDEX 1
 #define OUTPUTPATH_INDEX 2
+#define NUMTHREADS_INDEX 3
 
 #define TABLE_COLUMN_LENGTH 30
 
@@ -108,9 +112,9 @@ struct Errors {
 bool		fileExists						(const char* path);
 bool		pathExist						(const char* path);
 bool		endsWith						(const string & mainStr, const string & toMatch);
-bool		initPaths						(int argc, char * argv[], vector<string>& paths);
-void		parsePairOfArguments			(char * type, char * path, bool & validArgs, vector<string>& paths,
-											 vector<bool>& pathHasBeenGiven);
+bool		initArgumentVector				(int argc, char * argv[], vector<string>& argVec);
+void		parsePairOfArguments			(char * type, char * path, bool & validArgs, vector<string>& argVec,
+											 vector<bool>& argHasBeenGiven);
 
 /* -------------------------- GameManager play() helper functions ------------------------ */
 

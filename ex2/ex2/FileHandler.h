@@ -14,10 +14,11 @@ private:
 	/* ---------------------------------- File Handler members -------------------------------- */
 	/* ---------------------------------------------------------------------------------------- */
 
-	// maze, algorithm and output paths
+	// maze, algorithm, output paths and num of threads
 	const string &			m_mazePath;
 	const string &			m_algorithmPath;
 	const string &			m_outputPath;
+	const int				m_numOfThreads;
 
 	// match, algorithm and dl vectors
 	vector<MatchManager *>	m_matchVector;
@@ -63,9 +64,10 @@ private:
 
 public:
 	/* ---------------------------------- c'tor and d'tor ------------------------------- */
-	FileHandler(vector<string>& paths)	:	m_mazePath(paths[MAZEPATH_INDEX]),
-											m_algorithmPath(paths[ALGOPATH_INDEX]),
-											m_outputPath(paths[OUTPUTPATH_INDEX]) {};
+	FileHandler(vector<string>& arguments)	:	m_mazePath(arguments[MAZEPATH_INDEX]),
+											m_algorithmPath(arguments[ALGOPATH_INDEX]),
+											m_outputPath(arguments[OUTPUTPATH_INDEX]),
+											m_numOfThreads(stoi(arguments[NUMTHREADS_INDEX])) {};
 	~FileHandler											();
 
 	/* - functions responsible for algorithms and matches generation & output creation -- */
