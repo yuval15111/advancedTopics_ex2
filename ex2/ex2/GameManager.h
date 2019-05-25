@@ -12,16 +12,16 @@ private:
 	/* ---------------------------------------------------------------------------------------- */
 
 	// These members contain all the details about the maze in the eyes of the algorithm.
-	string 										m_name;
-	int 										m_maxSteps, m_rowsNum, m_colsNum;
-	MazeBoard 									m_board;
-	Coordinate 									m_playerLocation;
-	Coordinate									m_endLocation;
-	map<Coordinate, int>						m_bookmarkMap;
-	int											m_bookmarkCount = 0;
+	string 							m_name;
+	int 							m_maxSteps, m_rowsNum, m_colsNum;
+	MazeBoard 						m_board;
+	Coordinate 						m_playerLocation;
+	Coordinate						m_endLocation;
+	map<Coordinate, int>			m_bookmarkMap;
+	int								m_bookmarkCount = 0;
 
 	// This member is a pointer to the algorithm object.
-	unique_ptr<AbstractAlgorithm> 				m_algorithm;
+	unique_ptr<AbstractAlgorithm>	m_algorithm;
 
 public:
 

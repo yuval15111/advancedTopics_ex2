@@ -98,7 +98,6 @@ unique_ptr<MatchManager> FileHandler::parseMaze(ifstream& fin) {
 	This function retrieves the name of the maze. */
 string FileHandler::getName(ifstream& fin, string & line) {
 	if (getline(fin, line)) {
-		cout << "line: " << line << endl;
 		return line;
 	}
 	return nullptr;
@@ -112,7 +111,6 @@ int FileHandler::getIntValue(ifstream& fin, const string & input, const ErrorTyp
 	const regex numReg("[1-9][0-9]*");
 	smatch match;
 	if (getline(fin, line)) {
-		cout << "line: " << line << endl;
 		if (!regex_match(line, reg)) {
 			pushError(error, line);
 			return -1;
@@ -212,8 +210,8 @@ vector<string> FileHandler::getMazeNamesVector() {
 }
 
 /* This function retrieves a vector of all the mazes' MoveLists objects. */
-vector<map<string, MoveList>> FileHandler::getAllMatchesMoveListMaps() {
-	vector<map<string, MoveList>> vec;
+vector<MoveListMap> FileHandler::getAllMatchesMoveListMaps() {
+	vector<MoveListMap> vec;
 	for (unsigned int i = 0; i < m_matchVector.size(); i++)
 		vec.emplace_back(m_matchVector[i]->getMoveListMap());
 	return vec;

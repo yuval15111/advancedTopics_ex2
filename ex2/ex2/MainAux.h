@@ -19,7 +19,6 @@
 #include <functional>
 #include <thread>
 #include <mutex>
-#include <atomic> // TODO: is necessary?
 
 #include "AbstractAlgorithm.h"
 
@@ -65,7 +64,8 @@ using ErrorPair = pair<ErrorType, string>;
 using ErrorList = vector<ErrorPair>;
 using AlgorithmFactory = function<unique_ptr<AbstractAlgorithm>()>;
 using MoveList = vector<char>;
-using MatchMoveLists = vector<MoveList>;
+using MoveListMap = map<string, MoveList>;
+using AlgorithmPair = pair<string, AlgorithmFactory>;
 typedef void(*Func) (const string & str);
 typedef void(*FuncNoArgs) ();
 typedef AbstractAlgorithm::Move Move;
@@ -128,7 +128,7 @@ void		printSeperationRow				(const unsigned int num_of_mazes);
 void		printTitles						(const unsigned int num_of_mazes, const vector<string> & mazeNameVector);
 void		printAlgorithmName				(const string & algoName);
 void		printAlgorithmResultOnAllMazes	(const string & path, const unsigned int num_of_mazes,
-											 const string & algoName, const vector<map<string, MoveList>> & allMatchesMoveLists,
+											 const string & algoName, const vector<MoveListMap> & allMatchesMoveLists,
 											 const vector<string> & mazeNameVector);
 inline bool	outputPathExists				(const string & path) { return path.compare("") != 0; }
 void		createOutputFile				(const string & path, const string & algoName, const string & mazeName,

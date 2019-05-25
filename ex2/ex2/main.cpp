@@ -9,9 +9,9 @@ int main(int argc, char* argv[]) {
 		printWrongArgumentsFormatError();
 		return -1;
 	}
-	FileHandler fh(arguments);						// We create a FileHandler object to parse everything needed:
-	fh.getAlgorithms();								// Finding all the algorithms in [algorithm_path]
-	fh.getMatchesAndPlay();							// Finding all the mazes in [maze_path] and solve them using the algorithms
-	fh.createOutput();								// Finally we create the output to the screen, and if [output_path] exists we provide log files of every algorithm's moves on every maze.
-	return 0;										// Ba-bye!
+	FileHandler fh(arguments);	// We create a FileHandler object to parse everything needed:
+	fh.getAlgorithms();			// Finding all the algorithms in [algorithm_path]
+	fh.getMatchesAndPlay();		// Finding all the mazes in [maze_path] and solve them using the algorithms
+	fh.createOutput();			// Finally we create the output to the screen, and if [output_path] exists we provide log files of every algorithm's moves on every maze.
+	return 0;					// Ba-bye!
 }
