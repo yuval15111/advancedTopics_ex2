@@ -17,8 +17,7 @@ void MatchManager::createGameManagers() {
 }
 
 /*	This is the the function each opened thread will run.
-	Every thread will continuously pop an algorithm from the stack and run a game until the stack is empty.
-*/
+	Every thread will continuously pop an algorithm from the stack and run a game until the stack is empty. */
 void MatchManager::threadFunc() {
 	while (true) {
 		AlgorithmPair p = getAlgorithmFromStack(); // p.first = algorithm name, p.second = algorithmFactory method
@@ -29,8 +28,7 @@ void MatchManager::threadFunc() {
 }
 
 /*	This function pops an algorithm pair (p.first = algorithm name,
-	p.second = algorithmFactory method) from the algorithm stack.
-*/
+	p.second = algorithmFactory method) from the algorithm stack. */
 AlgorithmPair MatchManager::getAlgorithmFromStack() {
 	m_mtx.lock();
 	if (m_AlgorithmStack.empty()) {
@@ -44,8 +42,7 @@ AlgorithmPair MatchManager::getAlgorithmFromStack() {
 }
 
 /*	This function fills the stack of AlgorithmPairs member (p.first = algorithm name,
-	p.second = algorithmFactory method) for the MatchManager.
-*/
+	p.second = algorithmFactory method) for the MatchManager. */
 void MatchManager::fillStack() {
 	AlgorithmRegistrar registrar = AlgorithmRegistrar::getInstance();
 	vector<AlgorithmFactory>& vec = registrar.getAlgoFactoryVec();
