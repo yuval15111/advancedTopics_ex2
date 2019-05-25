@@ -26,6 +26,7 @@ void FileHandler::generateAlgorithmsFromSoFiles(FILE * dl) {
 		size_t index = filename.find("_308243351_");
 		if ((index != string::npos) && (endsWith(filename, ".so"))) {
 			string algorithmName = filename.substr(index, 12);
+			cout << "dlopen!!!" << endl;
 			dlib = dlopen(filename.c_str(), RTLD_LAZY);
 			if (dlib == NULL) {
 				printBadAlgorithmWarning(algorithmName);
@@ -226,7 +227,10 @@ vector<MoveListMap> FileHandler::getAllMatchesMoveListMaps() {
 FileHandler::~FileHandler() {
 	AlgorithmRegistrar::getInstance().clearVector();	// factoryMethod deletion
 	for (void * dl : m_dlVector)
-		if (dl != NULL)	dlclose(dl);					// dl objects deletion
+		if (dl != NULL) {
+			cout << "dlclose!!!" << endl;
+			dlclose(dl);					// dl objects deletion
+		}
 }
 
 /*	This function seeks for all the .so files from <m_algorithmPath> and generates
